@@ -8,7 +8,7 @@ enum job {
 
 typedef struct
 {
-    char name[30];
+    char name[64];
     enum job job;
 } crewMember;
 
@@ -19,6 +19,7 @@ int initCrew(int crewSize);
 int handleCmdInput(char* cmd);
 int addCrewMember(crewMember *newCrewMember);
 int listCrew();
+int getJobToString(enum job job, char *jobString);
 
 int main() 
 {
@@ -26,9 +27,9 @@ int main()
     
     while (1 == 1)
     {
-        char cmd[20];
+        char cmd[64];
         printf("Enter a command :\n");
-        fgets(cmd, 20, stdin); 
+        fgets(cmd, sizeof(cmd), stdin); 
 
         printf("You've entered : %s\n", cmd);
 
@@ -88,17 +89,27 @@ int listCrew() {
     for (size_t i = 0; i < crewListSize; i++)
     {
         printf("Name: %s\n", crewList[i]->name);
-        switch ( crewList[i]->job )
-        {
+
+        char jobString[64];
+        getJobToString(crewList[i]->job, jobString); // jobToString gets turned into a char pointer when passed
+
+        printf("Job: %s\n", jobString);
+    }
+    
+    return 0;
+}
+
+int getJobToString(enum job job, char *jobString) {
+    switch (job)
+    {
         case ENGINEER:
-            printf("Job: Engineer\n");
+            strcpy(jobString, "Engineer");
             break;
         
         default:
-            printf("Job: Unregistered Job\n");
+            strcpy(jobString, "Unregistered Job");
             break;
-        }
     }
-    
+
     return 0;
 }
