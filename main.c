@@ -19,7 +19,7 @@ int initCrew(int crewSize);
 int handleCmdInput(char* cmd);
 int addCrewMember(crewMember *newCrewMember);
 int listCrew();
-int getJobToString(enum job job, char *jobString);
+int getJobToString(enum job job, char *jobString, int *jobStringMaxSize);
 
 int main() 
 {
@@ -54,6 +54,11 @@ int handleCmdInput(char* cmd)
 int addCrewMember(crewMember *newCrewMember)
 {
     crewMember **newCrewList = malloc(sizeof(crewMember*) * (crewListSize + 1));
+    if (newCrewList == NULL) 
+    {
+        printf("ERROR: Failed to allocate enough memory to add a crewman to the list");
+        return 1;
+    }
     for (size_t i = 0; i < crewListSize; i++)
     {
         newCrewList[i] = crewList[i];
@@ -71,9 +76,17 @@ int addCrewMember(crewMember *newCrewMember)
 int initCrew(int crewSize)
 {
     crewMember *crewMember_1 = malloc(sizeof(crewMember));
-    strcpy(crewMember_1->name, "James");
+    if (crewMember_1 == NULL)
+    {
+        printf("ERROR: Failed to allocate memory for initial crewman");
+        return 1;
+    }
+
+    strncpy(crewMember_1->name, "James", sizeof(crewMember_1->name));
     crewMember_1->job = ENGINEER;
     addCrewMember(crewMember_1);
+
+    return 0;
 }
 
 int listCrew() {
@@ -90,8 +103,9 @@ int listCrew() {
     {
         printf("Name: %s\n", crewList[i]->name);
 
-        char jobString[64];
-        getJobToString(crewList[i]->job, jobString); // jobToString gets turned into a char pointer when passed
+        int jobStringMaxSize = 64;
+        char jobString[jobStringMaxSize];
+        getJobToString(crewList[i]->job, jobString, &jobStringMaxSize); // jobToString gets turned into a char pointer when passed
 
         printf("Job: %s\n", jobString);
     }
@@ -99,15 +113,15 @@ int listCrew() {
     return 0;
 }
 
-int getJobToString(enum job job, char *jobString) {
+int getJobToString(enum job job, char *jobString, int *jobStringMaxSize) {
     switch (job)
     {
         case ENGINEER:
-            strcpy(jobString, "Engineer");
+            strncpy(jobString, "Engineer", *jobStringMaxSize);
             break;
         
         default:
-            strcpy(jobString, "Unregistered Job");
+            strncpy(jobString, "Unregistered Job", *jobStringMaxSize);
             break;
     }
 
