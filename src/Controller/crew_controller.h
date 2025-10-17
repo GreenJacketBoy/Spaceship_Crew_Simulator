@@ -6,7 +6,6 @@
 #include "../View/crew_view.h"
 
 
-int handleCmdInput(char* cmd);
-int main();
+int handleCrewCommand(char* cmd, size_t maxCmdLength);
 
 #endif
