@@ -4,9 +4,11 @@
 #include <string.h>
 #include "../View/super_view.h"
 #include "crew_controller.h"
+#include "room_controller.h"
 
 enum controller {
     CREW,
+    ROOM,
 };
 
 int promptAndRedirect();

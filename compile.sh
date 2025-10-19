@@ -1,9 +1,15 @@
 paths=(
     "src/View/crew_view.c"
     "src/View/super_view.c"
+    "src/View/room_view.c"
+
     "src/Model/crew_model.c"
+    "src/Model/room_model.c"
+
     "src/Controller/crew_controller.c"
     "src/Controller/super_controller.c"
+    "src/Controller/room_controller.c"
+
     "src/main.c"
 )
 
