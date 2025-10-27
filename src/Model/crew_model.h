@@ -1,17 +1,20 @@
 #ifndef CREW_MODEL_H
 #define CREW_MODEL_H
 
+#define CREW_MEMBER_NAME_MAX_LENGTH 64
+#define AMOUNT_OF_DIFFERENT_JOBS 1
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-enum job {
+enum job { // Try not to forget to update AMOUNT_OF_DIFFERENT_JOBS 
     ENGINEER,
 };
 
 typedef struct
 {
-    char name[64];
+    char name[CREW_MEMBER_NAME_MAX_LENGTH];
     enum job job;
 } crewMember;
 
@@ -20,5 +23,6 @@ extern size_t crewListSize;
 
 int initCrew(int crewSize);
 int addCrewMember(crewMember *newCrewMember);
+crewMember *buildCrewMember(enum job job, char *name, size_t nameLength);
 
 #endif

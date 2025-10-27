@@ -26,18 +26,29 @@ int addCrewMember(crewMember *newCrewMember)
     return 0;
 }
 
-int initCrew(int crewSize)
+crewMember *buildCrewMember(enum job job, char *name, size_t nameLength)
 {
-    crewMember *crewMember_1 = malloc(sizeof(crewMember));
-    if (crewMember_1 == NULL)
+    crewMember *newCrewMember = malloc(sizeof(crewMember));
+    if (newCrewMember == NULL)
     {
-        printf("ERROR: Failed to allocate memory for initial crewman");
-        return 1;
+        printf("ERROR: Failed to allocate memory for a crewman");
+        return NULL;
     }
 
-    strncpy(crewMember_1->name, "James", sizeof(crewMember_1->name));
-    crewMember_1->job = ENGINEER;
-    addCrewMember(crewMember_1);
+    strncpy(newCrewMember->name, name, CREW_MEMBER_NAME_MAX_LENGTH);
+    newCrewMember->job = job;
+
+    return newCrewMember;
+}
+
+int initCrew(int crewSize)
+{
+    crewMember *newCrewMember = buildCrewMember(ENGINEER, "James", CREW_MEMBER_NAME_MAX_LENGTH);
+    if (newCrewMember == NULL)
+        return -1;
+    
+    if (addCrewMember(newCrewMember) != 0)
+        return -2;
 
     return 0;
 }
