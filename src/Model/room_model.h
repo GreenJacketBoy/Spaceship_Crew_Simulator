@@ -17,6 +17,7 @@ enum roomType {
 
 typedef struct room
 {
+    size_t id; /* The unique identifier of the room */
     char name[ROOM_NAME_SIZE];
     enum roomType roomType;
     // Crew capacity is different from Storage capacity to keep the ship clean
@@ -27,6 +28,7 @@ typedef struct room
     size_t adjacentRoomsArraySize;
 } room;
 
+extern size_t currentBiggestRoomId;
 extern room **roomList;
 extern size_t roomListSize;
 

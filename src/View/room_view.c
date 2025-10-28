@@ -40,7 +40,7 @@ int printRoomWithPrefix(char *prefix, room *room)
     char roomTypeString[ROOM_TYPE_STRING_MAX_LENGTH];
     getRoomTypeToString(room->roomType, roomTypeString, ROOM_TYPE_STRING_MAX_LENGTH);
 
-    printf("%s%s (%s)\n", prefix, room->name, roomTypeString);
+    printf("%s%s (%s) #%d\n", prefix, room->name, roomTypeString, room->id);
     return 0;
 }
 

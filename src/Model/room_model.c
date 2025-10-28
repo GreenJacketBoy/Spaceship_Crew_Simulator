@@ -1,5 +1,6 @@
 #include "room_model.h"
 
+size_t currentBiggestRoomId = 0;
 room **roomList = NULL;
 size_t roomListSize = 0;
 
@@ -39,7 +40,10 @@ room* createRoom(
         printf("ERROR: Failed to allocate memory for initial room");
         return NULL;
     }
+ 
+    currentBiggestRoomId++;
 
+    newRoom->id = currentBiggestRoomId;
     strncpy(newRoom->name, name, ROOM_NAME_SIZE);
     newRoom->roomType = roomType;
     newRoom->crewCapacity = crewCapacity;
