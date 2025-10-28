@@ -29,6 +29,9 @@ int generateCrewMember(enum job *job, char *name, size_t nameLength)
 
     printf("Enter a name :\n");
     fgets(name, nameLength, stdin);
+    char *nameEndLineChar = strchr(name, '\n');
+    if (nameEndLineChar != NULL)
+        *nameEndLineChar = '\0';
 
     bool isJobSelected = false;
     do
