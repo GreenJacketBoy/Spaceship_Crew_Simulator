@@ -14,10 +14,12 @@ enum job { // Try not to forget to update AMOUNT_OF_DIFFERENT_JOBS
 
 typedef struct
 {
+    size_t id;
     char name[CREW_MEMBER_NAME_MAX_LENGTH];
     enum job job;
 } crewMember;
 
+extern size_t currentBiggestCrewMemberId;
 extern crewMember** crewList;
 extern size_t crewListSize;
 

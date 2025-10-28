@@ -12,12 +12,8 @@ int listCrew() {
     
     for (size_t i = 0; i < crewListSize; i++)
     {
-        printf("Name: %s\n", crewList[i]->name);
-
-        char jobString[JOB_STRING_MAX_LENGTH] = "";
-        getJobToString(crewList[i]->job, jobString, JOB_STRING_MAX_LENGTH); // jobString gets turned into a char pointer when passed
-
-        printf("Job: %s\n", jobString);
+        char prefix[] = "  ";
+        printCrewMemberWithPrefix(prefix, crewList[i]);
     }
     
     return 0;
@@ -73,4 +69,12 @@ int getJobToString(enum job job, char *jobString, int jobStringMaxSize) {
     }
 
     return 0;
+}
+
+int printCrewMemberWithPrefix(char *prefix, crewMember *crewMemberToDisplay)
+{
+        char jobString[JOB_STRING_MAX_LENGTH] = "";
+        getJobToString(crewMemberToDisplay->job, jobString, JOB_STRING_MAX_LENGTH); // jobString gets turned into a char pointer when passed
+
+        printf("%s%s (%s) #%d\n", prefix, crewMemberToDisplay->name, jobString, crewMemberToDisplay->id);
 }

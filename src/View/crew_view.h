@@ -11,5 +11,6 @@
 int listCrew();
 int getJobToString(enum job job, char *jobString, int jobStringMaxSize);
 int generateCrewMember(enum job *job, char *name, size_t nameLength);
+int printCrewMemberWithPrefix(char *prefix, crewMember *crewMemberToDisplay);
 
 #endif
