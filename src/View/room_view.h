@@ -5,6 +5,7 @@
 #include <string.h>
 #include "../Model/room_model.h"
 #include "colors.h"
+#include "super_view.h"
 
 #define ROOM_TYPE_STRING_MAX_LENGTH 64
 
@@ -19,6 +20,5 @@ int promptRoomAttributes(
     size_t *storageCapacity,
     size_t *size
 );
-size_t promptForSize_T(char *promptMessage);
 
 #endif

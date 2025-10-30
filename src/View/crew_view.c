@@ -24,7 +24,9 @@ int generateCrewMember(enum job *job, char *name, size_t nameLength)
     printf("Creating a crew member :\n");
 
     printf("Enter a name :\n");
+    printf(GRN BOLD);
     fgets(name, nameLength, stdin);
+    printf(CRESET);
     char *nameEndLineChar = strchr(name, '\n');
     if (nameEndLineChar != NULL)
         *nameEndLineChar = '\0';
@@ -38,16 +40,15 @@ int generateCrewMember(enum job *job, char *name, size_t nameLength)
         {
             char jobString[JOB_STRING_MAX_LENGTH] = "";
             getJobToString((enum job) i, jobString, JOB_STRING_MAX_LENGTH);
-            printf("  - %c : %s\n", ('a' + i), jobString);
+            printf("  - %zu : %s\n", i + 1, jobString);
         }
         
-        char userInputJob[64] = "";
-        fgets(userInputJob, 64, stdin);
-        int jobIndex = userInputJob[0] - 'a'; // I came up with it close to all by myself ^^
+        char *promptMessage = NULL;
+        int jobIndex = promptForSize_T(promptMessage);
 
-        if (jobIndex >= 0 && jobIndex < AMOUNT_OF_DIFFERENT_JOBS)
+        if (jobIndex >= 1 && jobIndex <= AMOUNT_OF_DIFFERENT_JOBS)
         {
-            *job = jobIndex;
+            *job = jobIndex - 1;
             isJobSelected = true;
         }
 
