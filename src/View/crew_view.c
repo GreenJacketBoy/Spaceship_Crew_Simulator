@@ -5,7 +5,7 @@ int listCrew() {
 
     if (crewListSize == 0)
     {
-        printf("The crew is empty.\n");
+        printf(RED BOLD"The crew is empty." CRESET "\n");
         return 0;
     }
     
@@ -76,5 +76,5 @@ int printCrewMemberWithPrefix(char *prefix, crewMember *crewMemberToDisplay)
     char jobString[JOB_STRING_MAX_LENGTH] = "";
     getJobToString(crewMemberToDisplay->job, jobString, JOB_STRING_MAX_LENGTH); // jobString gets turned into a char pointer when passed
 
-    printf("%s%s (%s) #%d\n", prefix, crewMemberToDisplay->name, jobString, crewMemberToDisplay->id);
+    printf("%s%s (" RED "%s" CRESET ") " YEL BOLD "#%zu" CRESET "\n", prefix, crewMemberToDisplay->name, jobString, crewMemberToDisplay->id);
 }

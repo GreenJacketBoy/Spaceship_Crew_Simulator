@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "../Model/crew_model.h"
+#include "colors.h"
 
 int listCrew();
 int getJobToString(enum job job, char *jobString, int jobStringMaxSize);

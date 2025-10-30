@@ -14,20 +14,20 @@ int listRooms()
     for (size_t i = 0; i < roomListSize; i++)
     {
         room *currentRoom = roomList[i];
-        printf("<===============>\n");
+        printf(YEL BOLD "<===============>\n" CRESET);
         printRoomWithPrefix("", currentRoom);
-        printf("Adjacent rooms (%d) :\n", currentRoom->adjacentRoomsArraySize);
+        printf("Adjacent rooms (" BLU BOLD "%d" CRESET ") :\n", currentRoom->adjacentRoomsArraySize);
 
         if (currentRoom->adjacentRoomsArraySize == 0)
         {
-            printf("  No Adjacent Rooms\n");
+            printf("  " RED ITALIC "No Adjacent Rooms" CRESET "\n");
         }
 
         room **adjacentRooms = currentRoom->adjacentRoomsArray;
 
         for (size_t j = 0; j < currentRoom->adjacentRoomsArraySize; j++)
         {
-            printRoomWithPrefix("  - ", adjacentRooms[j]);
+            printRoomWithPrefix(RED BOLD "  - " CRESET, adjacentRooms[j]);
         }
     
     }
@@ -47,7 +47,10 @@ int promptRoomAttributes(
     printf("Creating a new room :\n");
 
     printf("Enter a name :\n");
+    printf(GRN BOLD);
     fgets(name, nameLength, stdin);
+    printf(CRESET);
+
     char *nameEndLineChar = strchr(name, '\n');
     if (nameEndLineChar != NULL)
         *nameEndLineChar = '\0';
@@ -88,7 +91,7 @@ int printRoomWithPrefix(char *prefix, room *room)
     char roomTypeString[ROOM_TYPE_STRING_MAX_LENGTH];
     getRoomTypeToString(room->roomType, roomTypeString, ROOM_TYPE_STRING_MAX_LENGTH);
 
-    printf("%s%s (%s) [size : %zu, max crew : %zu, max storage : %zu] #%zu\n", prefix, room->name, roomTypeString, room->size, room->crewCapacity, room->storageCapacity, room->id);
+    printf("%s%s (" GRN "%s" CRESET ") " RED "[" CRESET "size : " BLU "%zu" CRESET ", max crew : " BLU "%zu" CRESET ", max storage : " BLU "%zu" CRESET "" RED "]" CRESET "" YEL BOLD " #%zu" CRESET "\n", prefix, room->name, roomTypeString, room->size, room->crewCapacity, room->storageCapacity, room->id);
     return 0;
 }
 
@@ -123,7 +126,9 @@ size_t promptForSize_T(char *promptMessage)
         printf("%s\n", promptMessage);
 
     char userInput[256] = "";
+    printf(BLU BOLD);
     fgets(userInput, 256, stdin);
+    printf(CRESET);
     
     char *endptr;
     size_t number = strtoul(userInput, &endptr, 0); 
