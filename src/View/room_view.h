@@ -10,5 +10,14 @@
 int listRooms();
 int printRoomWithPrefix(char *prefix, room *room);
 int getRoomTypeToString(enum roomType roomType, char *roomTypeStringBuffer, size_t roomTypeStringMaxLength);
+int promptRoomAttributes(
+    char *name,
+    size_t nameLength,
+    enum roomType *roomType,
+    size_t *crewCapacity,
+    size_t *storageCapacity,
+    size_t *size
+);
+size_t promptForSize_T(char *promptMessage);
 
 #endif

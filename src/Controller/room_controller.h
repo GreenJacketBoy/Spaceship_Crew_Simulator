@@ -7,5 +7,6 @@
 
 
 int handleRoomCommand(char* cmd, size_t maxCmdLength);
+int roomAdd();
 
 #endif

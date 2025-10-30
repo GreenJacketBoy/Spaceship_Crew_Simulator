@@ -44,7 +44,7 @@ room* createRoom(
     currentBiggestRoomId++;
 
     newRoom->id = currentBiggestRoomId;
-    strncpy(newRoom->name, name, ROOM_NAME_SIZE);
+    strncpy(newRoom->name, name, ROOM_NAME_MAX_LENGTH);
     newRoom->roomType = roomType;
     newRoom->crewCapacity = crewCapacity;
     newRoom->storageCapacity = storageCapacity;

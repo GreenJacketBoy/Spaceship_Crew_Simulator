@@ -1,14 +1,15 @@
 #ifndef ROOM_MODEL_H
 #define ROOM_MODEL_H
 
-#define ROOM_NAME_SIZE 128
+#define ROOM_NAME_MAX_LENGTH 128
+#define AMOUNT_OF_DIFFERENT_ROOM_TYPES 4
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-enum roomType {
+enum roomType { // Try not to forget to update AMOUNT_OF_DIFFERENT_ROOM_TYPES
     CORRIDOR,
     MEDBAY,
     QUARTER,
@@ -18,7 +19,7 @@ enum roomType {
 typedef struct room
 {
     size_t id; /* The unique identifier of the room */
-    char name[ROOM_NAME_SIZE];
+    char name[ROOM_NAME_MAX_LENGTH];
     enum roomType roomType;
     // Crew capacity is different from Storage capacity to keep the ship clean
     size_t crewCapacity; /** Amount of Crew Members a room can hold at once */

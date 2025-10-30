@@ -73,8 +73,8 @@ int getJobToString(enum job job, char *jobString, int jobStringMaxSize) {
 
 int printCrewMemberWithPrefix(char *prefix, crewMember *crewMemberToDisplay)
 {
-        char jobString[JOB_STRING_MAX_LENGTH] = "";
-        getJobToString(crewMemberToDisplay->job, jobString, JOB_STRING_MAX_LENGTH); // jobString gets turned into a char pointer when passed
+    char jobString[JOB_STRING_MAX_LENGTH] = "";
+    getJobToString(crewMemberToDisplay->job, jobString, JOB_STRING_MAX_LENGTH); // jobString gets turned into a char pointer when passed
 
-        printf("%s%s (%s) #%d\n", prefix, crewMemberToDisplay->name, jobString, crewMemberToDisplay->id);
+    printf("%s%s (%s) #%d\n", prefix, crewMemberToDisplay->name, jobString, crewMemberToDisplay->id);
 }
