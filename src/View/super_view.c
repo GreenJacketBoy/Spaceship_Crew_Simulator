@@ -27,3 +27,9 @@ size_t promptForSize_T(char *promptMessage)
 
     return number; 
 }
+
+int displayError(char *errorMessage)
+{
+    printf(RED BOLD "ERROR : %s" CRESET "\n", errorMessage);
+    return 0;
+}

@@ -44,7 +44,7 @@ int getControllerToRedirectTo(char *fullCommand, size_t maxCmdLength, enum contr
 
         if (firstSpaceChar == NULL)
         {
-            printf("There's been a problem in the parsing of the command word.\n");
+            displayError("There's been a problem in the parsing of the command word");
             return -1;
         }
         

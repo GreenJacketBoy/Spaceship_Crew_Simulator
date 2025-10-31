@@ -30,6 +30,18 @@ int roomAdd()
     promptRoomAttributes((char *) &name, ROOM_NAME_MAX_LENGTH, &roomType, &crewCapacity, &storageCapacity, &size);
 
     room *newRoom = createRoom(name, roomType, crewCapacity, storageCapacity, size);
+    if (newRoom == NULL)
+        goto error_malloc_faillure_room;
+    if (addRoom(newRoom) != 0)
+        goto error_malloc_faillure_room_list;
 
-    addRoom(newRoom);
+    return 0;
+
+error_malloc_faillure_room:
+    displayError("Failed to allocate enough memory for the a new room");
+    return -1;
+error_malloc_faillure_room_list:
+    displayError("Failed to allocate enough memory to update the room list");
+    free(newRoom);
+    return -2;
 }

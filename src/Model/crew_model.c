@@ -32,7 +32,6 @@ crewMember *buildCrewMember(enum job job, char *name, size_t nameLength)
     crewMember *newCrewMember = malloc(sizeof(crewMember));
     if (newCrewMember == NULL)
     {
-        printf("ERROR: Failed to allocate memory for a crewman");
         return NULL;
     }
 
@@ -73,7 +72,11 @@ int destroyCrewMember(size_t crewMemberId)
         if (crewMemberWasFound)
             newCrewList[i - 1] = crewList[i]; // -1 to account for the removed member
         else if (crewList[i]->id == crewMemberId)
+        {
             crewMemberWasFound = true;
+            free(crewList[i]);
+            crewList[i] = NULL;
+        }
         else if (i >= crewListSize - 1)
             goto error_crew_member_not_found;
         else

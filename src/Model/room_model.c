@@ -9,7 +9,6 @@ int addRoom(room *newRoom)
     room **newRoomList = malloc(sizeof(room*) * (roomListSize + 1));
     if (newRoomList == NULL) 
     {
-        printf("ERROR: Failed to allocate enough memory to add a crewman to the list");
         return 1;
     }
     for (size_t i = 0; i < roomListSize; i++)
@@ -36,10 +35,7 @@ room* createRoom(
 {
     room *newRoom = malloc(sizeof(room));
     if (newRoom == NULL)
-    {
-        printf("ERROR: Failed to allocate memory for initial room");
         return NULL;
-    }
  
     currentBiggestRoomId++;
 
@@ -58,32 +54,31 @@ room* createRoom(
 int addAdjacentRoom(room *roomToAddTo, room *adjacentRoomToAdd)
 {
     if (isAdjacent(roomToAddTo, adjacentRoomToAdd))
-    {
         return 0;
-    }
+
 
     size_t amountOfAdjacentRooms = roomToAddTo->adjacentRoomsArraySize;
     room **newAdjacentRoomArray = malloc(sizeof(*(roomToAddTo->adjacentRoomsArray)) * (amountOfAdjacentRooms + 1));
     if (newAdjacentRoomArray == NULL) 
-    {
-        printf("ERROR: Failed to allocate enough memory to add an adjacent room to the list");
-        return 1;
-    }
+        goto error_malloc_faillure;
+ 
     for (size_t i = 0; i < amountOfAdjacentRooms; i++)
     {        
         newAdjacentRoomArray[i] = roomToAddTo->adjacentRoomsArray[i];
     }
-
     
     newAdjacentRoomArray[amountOfAdjacentRooms] = adjacentRoomToAdd;
     roomToAddTo->adjacentRoomsArraySize++;
 
     free(roomToAddTo->adjacentRoomsArray);
-
     roomToAddTo->adjacentRoomsArray = newAdjacentRoomArray;
 
     addAdjacentRoom(adjacentRoomToAdd, roomToAddTo);
     return 0;
+
+error_malloc_faillure:
+    displayError("Failed to allocate enough memory to add an adjacent room to the list");
+    return 1;
 }
 
 bool isAdjacent(room *referenceRoom, room *roomToLookFor)

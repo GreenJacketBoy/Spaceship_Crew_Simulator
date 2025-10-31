@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "../View/super_view.h"
 
 enum roomType { // Try not to forget to update AMOUNT_OF_DIFFERENT_ROOM_TYPES
     CORRIDOR,
