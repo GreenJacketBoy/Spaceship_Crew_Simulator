@@ -13,6 +13,12 @@ int handleCrewCommand(char* cmd, size_t maxCmdLength)
         crewAdd();
         return 0;
     }
+ 
+    if (strncmp(cmd, "crew rm\n", maxCmdLength) == 0)
+    {
+        crewRm();
+        return 0;
+    }
     
     printf("'%s' is not a valid crew command.\n", cmd);
     return -1;
@@ -33,4 +39,19 @@ int crewAdd()
         return -2;
 
     return 0;
+}
+
+int crewRm()
+{
+    if (crewListSize == 0)
+        goto error_empty_crew_list;
+
+    size_t crewMemberId;
+    viewRemoveCrewMember(&crewMemberId);
+
+    int errorCode = destroyCrewMember(crewMemberId); 
+    return handleRemoveCrewMemberErrors(errorCode);
+
+error_empty_crew_list:
+    return handleRemoveCrewMemberErrors(-2);
 }

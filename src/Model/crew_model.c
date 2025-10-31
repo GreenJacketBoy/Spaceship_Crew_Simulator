@@ -56,3 +56,40 @@ int initCrew(int crewSize)
 
     return 0;
 }
+
+int destroyCrewMember(size_t crewMemberId)
+{
+    if (crewListSize == 0)
+        goto error_list_is_empty;
+
+    crewMember **newCrewList = malloc(sizeof(crewMember*) * (crewListSize - 1));
+
+    if (crewListSize != 1 && newCrewList == NULL)
+        goto error_malloc_failure;
+ 
+    bool crewMemberWasFound = false;
+    for (size_t i = 0; i < crewListSize; i++)
+    {
+        if (crewMemberWasFound)
+            newCrewList[i - 1] = crewList[i]; // -1 to account for the removed member
+        else if (crewList[i]->id == crewMemberId)
+            crewMemberWasFound = true;
+        else if (i >= crewListSize - 1)
+            goto error_crew_member_not_found;
+        else
+            newCrewList[i] = crewList[i]; 
+    }
+    
+    crewListSize--;
+    free(crewList);
+    crewList = newCrewList;
+    return 0;
+
+error_list_is_empty:
+    return -2;
+error_malloc_failure:
+    return -1;
+error_crew_member_not_found:
+    free(newCrewList);
+    return -404; // ahahah very funny
+}

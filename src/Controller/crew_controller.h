@@ -8,5 +8,6 @@
 
 int handleCrewCommand(char* cmd, size_t maxCmdLength);
 int crewAdd();
+int crewRm();
 
 #endif

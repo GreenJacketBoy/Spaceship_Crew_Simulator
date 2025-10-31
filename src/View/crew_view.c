@@ -1,11 +1,11 @@
 #include "crew_view.h"
 
 int listCrew() {
-    printf("Crew :\n");
+    printf("Crew : (" BLU BOLD "%zu" CRESET ")\n", crewListSize);
 
     if (crewListSize == 0)
     {
-        printf(RED BOLD"The crew is empty." CRESET "\n");
+        printf(RED ITALIC "  The crew is empty." CRESET "\n");
         return 0;
     }
     
@@ -55,6 +55,37 @@ int generateCrewMember(enum job *job, char *name, size_t nameLength)
     } while (!isJobSelected);
  
     return 0;        
+}
+
+int viewRemoveCrewMember(size_t *crewMemberId)
+{
+    *crewMemberId = promptForSize_T("Enter the id of the crew member to remove :");
+    return 0;
+}
+
+int handleRemoveCrewMemberErrors(int errorCode)
+{
+    switch (errorCode)
+    {
+        case 0:
+            break;
+        case -1:
+            printf(RED BOLD "ERROR : Could not allocate enough memory to perform the operation" CRESET "\n");
+            break;
+        case -2:
+            printf(GRN BOLD "There are no crew members" CRESET "\n");
+            break;
+        case -404:
+            printf(GRN BOLD "The crew member could not be found" CRESET "\n");
+            break;
+        
+        default:
+            printf(RED BOLD "Undefined error code \"%d\" in the handleRemoveCrewMemberErrors function. What the fuck?" CRESET "\n");
+            return -1;
+            break;
+    }
+
+    return 0;
 }
 
 int getJobToString(enum job job, char *jobString, int jobStringMaxSize) {
