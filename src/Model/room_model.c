@@ -83,15 +83,24 @@ error_malloc_faillure:
 
 bool isAdjacent(room *referenceRoom, room *roomToLookFor)
 {
-    for (size_t i = 0; i < referenceRoom->adjacentRoomsArraySize; i++)
+    room *returnedRoom = getRoomInArray(
+        referenceRoom->adjacentRoomsArray,
+        referenceRoom->adjacentRoomsArraySize,
+        roomToLookFor->id
+    );
+
+    return returnedRoom == NULL ? false : true;
+}
+
+room *getRoomInArray(room **roomsArray, size_t roomsArraySize, size_t roomIdToLookFor)
+{
+    for (size_t i = 0; i < roomsArraySize; i++)
     {
-        if (referenceRoom->adjacentRoomsArray[i] == roomToLookFor)
-        {
-            return true;
-        }
+        if (roomsArray[i]->id == roomIdToLookFor)
+            return roomsArray[i];
     }
 
-    return false;
+    return NULL;
 }
 
 int initRoom(int amountOfRooms)

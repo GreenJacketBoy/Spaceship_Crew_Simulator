@@ -19,6 +19,12 @@ int handleRoomCommand(char* cmd, size_t maxCmdLength)
         roomRm();
         return 0;
     }
+
+    if (strncmp(cmd, "room link\n", maxCmdLength) == 0)
+    {
+        roomLink();
+        return 0;
+    }
     
     printf("'%s' is not a valid room command.\n", cmd);
     return -1;
@@ -67,4 +73,29 @@ int roomRm()
     }
 
     return errorCode;
+}
+
+int roomLink()
+{
+    size_t roomIdToLink_1 = promptForSize_T("Id of the " BOLD "first" CRESET " room to link :");
+    room *roomToLink_1 = getRoomInArray(roomList, roomListSize, roomIdToLink_1);
+    if (roomToLink_1 == NULL)
+        goto error_room_not_found;
+
+    size_t roomIdToLink_2 = promptForSize_T("Id of the " BOLD "second" CRESET " room to link :");
+    room *roomToLink_2 = getRoomInArray(roomList, roomListSize, roomIdToLink_2);
+    if (roomToLink_2 == NULL)
+        goto error_room_not_found;
+
+    if (addAdjacentRoom(roomToLink_1, roomToLink_2) != 0)
+        goto error_could_not_link_room;
+
+    return 0;
+
+error_room_not_found:
+    displayError("There are no rooms with this Id");
+    return -1;
+error_could_not_link_room:
+    displayError("The 2 rooms were found but something went wrong when attempting to link them");
+    return -2;
 }

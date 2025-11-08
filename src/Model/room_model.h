@@ -44,6 +44,7 @@ room* createRoom(
 );
 int addAdjacentRoom(room *roomToAddTo, room *adjacentRoomToAdd);
 bool isAdjacent(room *referenceRoom, room *roomToLookFor);
+room *getRoomInArray(room **roomsArray, size_t roomsArraySize, size_t roomIdToLookFor);
 int addRoom(room *newRoom);
 int destroyRoom(size_t roomId);
 room *popRoomFromRoomArray(room ***roomsArray, size_t *roomsArraySize, size_t roomIdToRemove, bool deepRemoval);
