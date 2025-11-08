@@ -2,7 +2,7 @@
 
 int listRooms()
 {
-    printf("Rooms :\n");
+    printf("Rooms (" BLU BOLD "%zu" CRESET "):\n", roomListSize);
 
     if (roomListSize == 0)
     {
@@ -85,6 +85,13 @@ int promptRoomAttributes(
  
     return 0;
 }
+
+int viewRoomRm(size_t *roomIdToRemove)
+{
+    *roomIdToRemove = promptForSize_T("Enter the Id of the room to remove :");
+    return 0;
+}
+
 
 int printRoomWithPrefix(char *prefix, room *room)
 {

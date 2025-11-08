@@ -20,5 +20,6 @@ int promptRoomAttributes(
     size_t *storageCapacity,
     size_t *size
 );
+int viewRoomRm(size_t *roomIdToRemove);
 
 #endif

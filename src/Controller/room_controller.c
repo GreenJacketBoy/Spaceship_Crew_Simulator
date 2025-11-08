@@ -13,6 +13,12 @@ int handleRoomCommand(char* cmd, size_t maxCmdLength)
         roomAdd();
         return 0;
     }
+
+    if (strncmp(cmd, "room rm\n", maxCmdLength) == 0)
+    {
+        roomRm();
+        return 0;
+    }
     
     printf("'%s' is not a valid room command.\n", cmd);
     return -1;
@@ -44,4 +50,21 @@ error_malloc_faillure_room_list:
     displayError("Failed to allocate enough memory to update the room list");
     free(newRoom);
     return -2;
+}
+
+int roomRm()
+{
+    size_t roomIdToRemove;
+    viewRoomRm(&roomIdToRemove);
+
+    int errorCode = destroyRoom(roomIdToRemove);
+
+    switch (errorCode) {
+        case 0:
+            break;
+        case -1:
+            displayError("There was a problem when attempting to destroy the room");
+    }
+
+    return errorCode;
 }

@@ -109,3 +109,66 @@ int initRoom(int amountOfRooms)
 
     return 0;
 }
+
+int destroyRoom(size_t roomId)
+{
+    bool deepRemoval = true;
+    room *removedRoom = popRoomFromRoomArray(&roomList, &roomListSize, roomId, deepRemoval);
+    
+    if (removedRoom == NULL)
+        return -1;
+
+    free(removedRoom);
+    return 0;
+}
+
+room *popRoomFromRoomArray(room ***roomsArray, size_t *roomsArraySize, size_t roomIdToRemove, bool deepRemoval)
+{
+    room **newRoomArray = NULL;
+    room *poppedRoom = NULL;
+    
+    if (*roomsArraySize == 0)
+        goto error;
+
+    newRoomArray = malloc(sizeof(room*) * (*roomsArraySize - 1));
+
+    bool roomWasFound = false;
+    for (size_t i = 0; i < *roomsArraySize; i++)
+    {
+        if (roomWasFound)
+            newRoomArray[i - 1] = (*roomsArray)[i]; // -1 to account for the removed room
+        else if ((*roomsArray)[i]->id == roomIdToRemove)
+        {
+            if (deepRemoval)
+            {
+                for (size_t j = 0; j < (*roomsArray)[i]->adjacentRoomsArraySize; j++)
+                {
+                    popRoomFromRoomArray(
+                        &((*roomsArray)[i]->adjacentRoomsArray[j]->adjacentRoomsArray),
+                        &((*roomsArray)[i]->adjacentRoomsArray[j]->adjacentRoomsArraySize),
+                        roomIdToRemove,
+                        false
+                    );
+                }
+            }
+ 
+            poppedRoom = (*roomsArray)[i];
+            roomWasFound = true;
+
+        }
+        else if (i >= *roomsArraySize - 1)
+            goto error;
+        else
+            newRoomArray[i] = (*roomsArray)[i]; 
+    }
+
+    free(*roomsArray);
+    *roomsArray = newRoomArray;
+    *roomsArraySize = *roomsArraySize - 1;
+
+    return poppedRoom;
+    
+error:
+    free(newRoomArray);
+    return NULL;
+}
