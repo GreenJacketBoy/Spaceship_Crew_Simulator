@@ -17,5 +17,6 @@ int printCrewMemberWithPrefix(char *prefix, crewMember *crewMemberToDisplay);
 int viewRemoveCrewMember(size_t *crewMemberId);
 int handleRemoveCrewMemberErrors(int errorCode);
 int viewEditCrewMember(crewMember *crewMemberToEdit, enum job *job, char *name, size_t nameLength);
+enum job promptForJob(char *promptMessage);
 
 #endif

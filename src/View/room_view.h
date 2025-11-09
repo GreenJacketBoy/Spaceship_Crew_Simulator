@@ -30,5 +30,6 @@ int viewRoomEdit(
     size_t *newStorageCapacity,
     size_t *newSize
 );
+enum roomType promptForRoomType(char *promptMessage);
 
 #endif

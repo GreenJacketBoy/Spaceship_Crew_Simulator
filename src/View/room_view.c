@@ -55,27 +55,7 @@ int promptRoomAttributes(
     if (nameEndLineChar != NULL)
         *nameEndLineChar = '\0';
 
-    bool isRoomTypeSelected = false;
-    do
-    {        
-        printf("Select a room type :\n");
-
-        for (size_t i = 0; i < AMOUNT_OF_DIFFERENT_ROOM_TYPES; i++)
-        {
-            char roomTypeString[ROOM_TYPE_STRING_MAX_LENGTH] = "";
-            getRoomTypeToString((enum roomType) i, roomTypeString, ROOM_TYPE_STRING_MAX_LENGTH);
-            printf("  - %d : %s\n", i + 1, roomTypeString);
-        }
- 
-        char *promptMessage = NULL;
-        size_t roomTypeIndex = promptForSize_T(promptMessage);
-
-        if (roomTypeIndex >= 1 && roomTypeIndex <= AMOUNT_OF_DIFFERENT_ROOM_TYPES)
-        {
-            *roomType = roomTypeIndex - 1;
-            isRoomTypeSelected = true;
-        }
-    } while (!isRoomTypeSelected);
+    *roomType = promptForRoomType("Select a room type :");
 
     *crewCapacity = promptForSize_T("Enter crew capacity :");
     
@@ -118,26 +98,16 @@ int viewRoomEdit(
     char previousRoomTypeString[ROOM_TYPE_STRING_MAX_LENGTH] = "";
     getRoomTypeToString(roomToEdit->roomType, previousRoomTypeString, ROOM_TYPE_STRING_MAX_LENGTH);
 
-    while (!isRoomTypeSelected)
-    {
-        printf("Select a room type (previously " GRN "%s" CRESET ") :\n", previousRoomTypeString);
+    char promptMessage[128 + ROOM_TYPE_STRING_MAX_LENGTH] = "";
+    snprintf(
+        promptMessage,
+        128 + ROOM_TYPE_STRING_MAX_LENGTH,
+        "Select a new job (previously " GRN "%s" CRESET " (" BLU "%u" CRESET ")) :",
+        previousRoomTypeString,
+        roomToEdit->roomType + 1
+    );
 
-        for (size_t i = 0; i < AMOUNT_OF_DIFFERENT_ROOM_TYPES; i++)
-        {
-            char roomTypeString[ROOM_TYPE_STRING_MAX_LENGTH] = "";
-            getRoomTypeToString((enum roomType) i, roomTypeString, ROOM_TYPE_STRING_MAX_LENGTH);
-            printf("  - %zu : %s\n", i + 1, roomTypeString);
-        }
- 
-        char *promptMessage = NULL;
-        size_t roomTypeIndex = promptForSize_T(promptMessage);
-
-        if (roomTypeIndex >= 1 && roomTypeIndex <= AMOUNT_OF_DIFFERENT_ROOM_TYPES)
-        {
-            *newType = roomTypeIndex - 1;
-            isRoomTypeSelected = true;
-        }
-    } 
+    *newType = promptForRoomType(promptMessage);
 
     char crewCapacityPromptMessage[128] = "Error!";
     snprintf(crewCapacityPromptMessage, 128, "Enter the new crew capacity (previously " BLU "%zu" CRESET ") :", roomToEdit->crewCapacity);
@@ -187,4 +157,33 @@ int getRoomTypeToString(enum roomType roomType, char *roomTypeString, size_t roo
     }
 
     return 0;
+}
+
+enum roomType promptForRoomType(char *promptMessage)
+{
+    enum roomType returnRoomType = 0;
+    bool isRoomTypeSelected = false;
+
+    while (!isRoomTypeSelected)
+    {
+        printf("%s\n", promptMessage);
+
+        for (size_t i = 0; i < AMOUNT_OF_DIFFERENT_ROOM_TYPES; i++)
+        {
+            char roomTypeString[ROOM_TYPE_STRING_MAX_LENGTH] = "";
+            getRoomTypeToString((enum roomType) i, roomTypeString, ROOM_TYPE_STRING_MAX_LENGTH);
+            printf("  - " BLU "%zu" CRESET " : " GRN "%s" CRESET "\n", i + 1, roomTypeString);
+        }
+ 
+        char *promptMessage = NULL;
+        size_t roomTypeIndex = promptForSize_T(promptMessage);
+
+        if (roomTypeIndex >= 1 && roomTypeIndex <= AMOUNT_OF_DIFFERENT_ROOM_TYPES)
+        {
+            returnRoomType = roomTypeIndex - 1;
+            isRoomTypeSelected = true;
+        }
+    } 
+
+    return returnRoomType;
 }

@@ -31,28 +31,7 @@ int generateCrewMember(enum job *job, char *name, size_t nameLength)
     if (nameEndLineChar != NULL)
         *nameEndLineChar = '\0';
 
-    bool isJobSelected = false;
-    do
-    {        
-        printf("Select a job :\n");
-
-        for (size_t i = 0; i < AMOUNT_OF_DIFFERENT_JOBS; i++)
-        {
-            char jobString[JOB_STRING_MAX_LENGTH] = "";
-            getJobToString((enum job) i, jobString, JOB_STRING_MAX_LENGTH);
-            printf("  - %zu : %s\n", i + 1, jobString);
-        }
-        
-        char *promptMessage = NULL;
-        int jobIndex = promptForSize_T(promptMessage);
-
-        if (jobIndex >= 1 && jobIndex <= AMOUNT_OF_DIFFERENT_JOBS)
-        {
-            *job = jobIndex - 1;
-            isJobSelected = true;
-        }
-
-    } while (!isJobSelected);
+    *job = promptForJob("Select a job :");
  
     return 0;        
 }
@@ -106,28 +85,17 @@ int viewEditCrewMember(crewMember *crewMemberToEdit, enum job *newJob, char *new
     char previousJobString[JOB_STRING_MAX_LENGTH] = "";
     getJobToString(crewMemberToEdit->job, previousJobString, JOB_STRING_MAX_LENGTH);
 
-    while (!isJobSelected)
-    {        
-        printf("Select a new job (previously " GRN "%s" CRESET ") :\n", previousJobString);
+    char promptMessage[128 + JOB_STRING_MAX_LENGTH] = "";
+    snprintf(
+        promptMessage,
+        128 + JOB_STRING_MAX_LENGTH,
+        "Select a new job (previously " GRN "%s" CRESET " (" BLU "%u" CRESET ")) :",
+        previousJobString,
+        crewMemberToEdit->job + 1
+    );
 
-        for (size_t i = 0; i < AMOUNT_OF_DIFFERENT_JOBS; i++)
-        {
-            char jobString[JOB_STRING_MAX_LENGTH] = "";
-            getJobToString((enum job) i, jobString, JOB_STRING_MAX_LENGTH);
-            printf("  - %zu : %s\n", i + 1, jobString);
-        }
-        
-        char *promptMessage = NULL;
-        int jobIndex = promptForSize_T(promptMessage);
+    *newJob = promptForJob(promptMessage);
 
-        if (jobIndex >= 1 && jobIndex <= AMOUNT_OF_DIFFERENT_JOBS)
-        {
-            *newJob = jobIndex - 1;
-            isJobSelected = true;
-        }
-
-    } 
- 
     return 0;        
 }
 
@@ -156,4 +124,33 @@ int printCrewMemberWithPrefix(char *prefix, crewMember *crewMemberToDisplay)
     getJobToString(crewMemberToDisplay->job, jobString, JOB_STRING_MAX_LENGTH); // jobString gets turned into a char pointer when passed
 
     printf("%s%s (" RED "%s" CRESET ") " YEL BOLD "#%zu" CRESET "\n", prefix, crewMemberToDisplay->name, jobString, crewMemberToDisplay->id);
+}
+
+enum job promptForJob(char *promptMessage)
+{
+    enum job returnedJob = 0;
+    bool isJobSelected = false;
+
+    while (!isJobSelected)
+    {        
+        printf("%s\n", promptMessage);
+
+        for (size_t i = 0; i < AMOUNT_OF_DIFFERENT_JOBS; i++)
+        {
+            char jobString[JOB_STRING_MAX_LENGTH] = "";
+            getJobToString((enum job) i, jobString, JOB_STRING_MAX_LENGTH);
+            printf("  - " BLU "%zu" CRESET " : " GRN "%s" CRESET "\n", i + 1, jobString);
+        }
+        
+        char *jobIndexPromptMessage = NULL;
+        int jobIndex = promptForSize_T(jobIndexPromptMessage);
+
+        if (jobIndex >= 1 && jobIndex <= AMOUNT_OF_DIFFERENT_JOBS)
+        {
+            returnedJob = jobIndex - 1;
+            isJobSelected = true;
+        }
+    }
+
+    return returnedJob;
 }
