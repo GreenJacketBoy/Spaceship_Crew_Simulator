@@ -181,3 +181,22 @@ error:
     free(newRoomArray);
     return NULL;
 }
+
+int modelEditRoom(
+    room *roomToEdit,
+    char *newName,
+    size_t newNameLength,
+    enum roomType newType,
+    size_t newCrewCapacity,
+    size_t newStorageCapacity,
+    size_t newSize
+)
+{
+    strncpy(roomToEdit->name, newName, newNameLength);
+    roomToEdit->roomType = newType;
+    roomToEdit->crewCapacity = newCrewCapacity;
+    roomToEdit->storageCapacity = newStorageCapacity;
+    roomToEdit->size = newSize;
+
+    return 0;
+}

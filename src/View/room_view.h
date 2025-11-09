@@ -21,5 +21,14 @@ int promptRoomAttributes(
     size_t *size
 );
 int viewRoomRm(size_t *roomIdToRemove);
+int viewRoomEdit(
+    room *roomToEdit,
+    char *newName,
+    size_t newNameLength,
+    enum roomType *newType,
+    size_t *newCrewCapacity,
+    size_t *newStorageCapacity,
+    size_t *newSize
+);
 
 #endif

@@ -31,6 +31,12 @@ int handleRoomCommand(char* cmd, size_t maxCmdLength)
         roomUnlink();
         return 0;
     }
+
+    if (strncmp(cmd, "room edit\n", maxCmdLength) == 0)
+    {
+        roomEdit();
+        return 0;
+    }
     
     printf("'%s' is not a valid room command.\n", cmd);
     return -1;
@@ -136,4 +142,28 @@ error_room_not_found:
 error_could_not_unlink_room:
     displayError("The 2 rooms were found but something went wrong when attempting to unlink them");
     return -2;
+}
+
+int roomEdit()
+{
+    size_t roomIdToEdit = promptForSize_T("Id of the room to edit :");
+    room *roomToEdit = getRoomInArray(roomList, roomListSize, roomIdToEdit);
+
+    if (roomToEdit == NULL)
+        goto error_room_not_found;
+
+    char newName[ROOM_NAME_MAX_LENGTH] = "";
+    enum roomType newType = 0;
+    size_t newCrewCapacity = 0;
+    size_t newStorageCapacity = 0;
+    size_t newSize = 0;
+
+    viewRoomEdit(roomToEdit, newName, ROOM_NAME_MAX_LENGTH, &newType, &newCrewCapacity, &newStorageCapacity, &newSize);
+    modelEditRoom(roomToEdit, newName, ROOM_NAME_MAX_LENGTH, newType, newCrewCapacity, newStorageCapacity, newSize);
+
+    return 0;
+
+error_room_not_found:
+    displayError("There are no rooms with this Id");
+    return -1;
 }

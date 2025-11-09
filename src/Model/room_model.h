@@ -48,5 +48,14 @@ room *getRoomInArray(room **roomsArray, size_t roomsArraySize, size_t roomIdToLo
 int addRoom(room *newRoom);
 int destroyRoom(size_t roomId);
 room *popRoomFromRoomArray(room ***roomsArray, size_t *roomsArraySize, size_t roomIdToRemove, bool deepRemoval);
+int modelEditRoom(
+    room *roomToEdit,
+    char *newName,
+    size_t newNameLength,
+    enum roomType newType,
+    size_t newCrewCapacity,
+    size_t newStorageCapacity,
+    size_t newSize
+);
 
 #endif

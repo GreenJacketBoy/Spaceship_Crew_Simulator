@@ -92,6 +92,68 @@ int viewRoomRm(size_t *roomIdToRemove)
     return 0;
 }
 
+int viewRoomEdit(
+    room *roomToEdit,
+    char *newName,
+    size_t newNameLength,
+    enum roomType *newType,
+    size_t *newCrewCapacity,
+    size_t *newStorageCapacity,
+    size_t *newSize
+) // Most of the code is copied from promptRoomAttributes()
+{
+    printf("Editing a room :\n");
+
+    printf("Enter a new name (previously " GRN "%s" CRESET ") :\n", roomToEdit->name);
+    printf(GRN BOLD);
+    fgets(newName, newNameLength, stdin);
+    printf(CRESET);
+
+    char *nameEndLineChar = strchr(newName, '\n');
+    if (nameEndLineChar != NULL)
+        *nameEndLineChar = '\0';
+
+    bool isRoomTypeSelected = false;
+
+    char previousRoomTypeString[ROOM_TYPE_STRING_MAX_LENGTH] = "";
+    getRoomTypeToString(roomToEdit->roomType, previousRoomTypeString, ROOM_TYPE_STRING_MAX_LENGTH);
+
+    while (!isRoomTypeSelected)
+    {
+        printf("Select a room type (previously " GRN "%s" CRESET ") :\n", previousRoomTypeString);
+
+        for (size_t i = 0; i < AMOUNT_OF_DIFFERENT_ROOM_TYPES; i++)
+        {
+            char roomTypeString[ROOM_TYPE_STRING_MAX_LENGTH] = "";
+            getRoomTypeToString((enum roomType) i, roomTypeString, ROOM_TYPE_STRING_MAX_LENGTH);
+            printf("  - %zu : %s\n", i + 1, roomTypeString);
+        }
+ 
+        char *promptMessage = NULL;
+        size_t roomTypeIndex = promptForSize_T(promptMessage);
+
+        if (roomTypeIndex >= 1 && roomTypeIndex <= AMOUNT_OF_DIFFERENT_ROOM_TYPES)
+        {
+            *newType = roomTypeIndex - 1;
+            isRoomTypeSelected = true;
+        }
+    } 
+
+    char crewCapacityPromptMessage[128] = "Error!";
+    snprintf(crewCapacityPromptMessage, 128, "Enter the new crew capacity (previously " BLU "%zu" CRESET ") :", roomToEdit->crewCapacity);
+    *newCrewCapacity = promptForSize_T(crewCapacityPromptMessage);
+ 
+    char storageCapacityPromptMessage[128] = "Error!";
+    snprintf(storageCapacityPromptMessage, 128, "Enter the new storage capacity (previously " BLU "%zu" CRESET ") :", roomToEdit->storageCapacity);
+    *newStorageCapacity = promptForSize_T(storageCapacityPromptMessage);
+ 
+    char sizePromptMessage[128] = "Error!";
+    snprintf(sizePromptMessage, 128, "Enter the new room size (previously " BLU "%zu" CRESET ") :", roomToEdit->size);
+    *newSize = promptForSize_T(sizePromptMessage);
+ 
+    return 0;
+}
+
 
 int printRoomWithPrefix(char *prefix, room *room)
 {

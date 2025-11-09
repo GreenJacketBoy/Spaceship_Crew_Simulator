@@ -11,5 +11,6 @@ int roomAdd();
 int roomRm();
 int roomLink();
 int roomUnlink();
+int roomEdit();
 
 #endif
