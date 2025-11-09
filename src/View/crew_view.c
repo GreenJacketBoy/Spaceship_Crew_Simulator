@@ -88,11 +88,58 @@ int handleRemoveCrewMemberErrors(int errorCode)
     return 0;
 }
 
+// code was mostly copied from generateCrewMember()
+int viewEditCrewMember(crewMember *crewMemberToEdit, enum job *newJob, char *newName, size_t nameLength)
+{
+    printf("Editing a crew member :\n");
+
+    printf("Enter a new name (previously " GRN "%s" CRESET "):\n", crewMemberToEdit->name);
+    printf(GRN BOLD);
+    fgets(newName, nameLength, stdin);
+    printf(CRESET);
+    char *nameEndLineChar = strchr(newName, '\n');
+    if (nameEndLineChar != NULL)
+        *nameEndLineChar = '\0';
+
+    bool isJobSelected = false;
+
+    char previousJobString[JOB_STRING_MAX_LENGTH] = "";
+    getJobToString(crewMemberToEdit->job, previousJobString, JOB_STRING_MAX_LENGTH);
+
+    while (!isJobSelected)
+    {        
+        printf("Select a new job (previously " GRN "%s" CRESET ") :\n", previousJobString);
+
+        for (size_t i = 0; i < AMOUNT_OF_DIFFERENT_JOBS; i++)
+        {
+            char jobString[JOB_STRING_MAX_LENGTH] = "";
+            getJobToString((enum job) i, jobString, JOB_STRING_MAX_LENGTH);
+            printf("  - %zu : %s\n", i + 1, jobString);
+        }
+        
+        char *promptMessage = NULL;
+        int jobIndex = promptForSize_T(promptMessage);
+
+        if (jobIndex >= 1 && jobIndex <= AMOUNT_OF_DIFFERENT_JOBS)
+        {
+            *newJob = jobIndex - 1;
+            isJobSelected = true;
+        }
+
+    } 
+ 
+    return 0;        
+}
+
 int getJobToString(enum job job, char *jobString, int jobStringMaxSize) {
     switch (job)
     {
         case ENGINEER:
             strncpy(jobString, "Engineer", jobStringMaxSize);
+            break;
+
+        case PILOT:
+            strncpy(jobString, "Pilot", jobStringMaxSize);
             break;
         
         default:

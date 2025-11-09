@@ -46,7 +46,7 @@ crewMember *buildCrewMember(enum job job, char *name, size_t nameLength)
 
 int initCrew(int crewSize)
 {
-    crewMember *newCrewMember = buildCrewMember(ENGINEER, "James", CREW_MEMBER_NAME_MAX_LENGTH);
+    crewMember *newCrewMember = buildCrewMember(PILOT, "James", CREW_MEMBER_NAME_MAX_LENGTH);
     if (newCrewMember == NULL)
         return -1;
     
@@ -95,4 +95,23 @@ error_malloc_failure:
 error_crew_member_not_found:
     free(newCrewList);
     return -404; // ahahah very funny
+}
+
+crewMember *getCrewMemberFromArray(size_t crewMemberId, crewMember **arrayToLookIn, size_t arraySize)
+{
+    for (size_t i = 0; i < arraySize; i++)
+    {
+        if (arrayToLookIn[i]->id == crewMemberId)
+            return arrayToLookIn[i];
+    }
+
+    return NULL;
+}
+
+int modelEditCrewMember(crewMember *crewMemberToEdit, enum job job, char *name, size_t nameLength)
+{
+    strncpy(crewMemberToEdit->name, name, nameLength);
+    crewMemberToEdit->job = job;
+
+    return 0;
 }

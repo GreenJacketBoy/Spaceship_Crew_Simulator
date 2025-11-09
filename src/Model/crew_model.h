@@ -2,7 +2,7 @@
 #define CREW_MODEL_H
 
 #define CREW_MEMBER_NAME_MAX_LENGTH 64
-#define AMOUNT_OF_DIFFERENT_JOBS 1
+#define AMOUNT_OF_DIFFERENT_JOBS 2
 
 #include <stdio.h>
 #include <string.h>
@@ -11,6 +11,7 @@
 
 enum job { // Try not to forget to update AMOUNT_OF_DIFFERENT_JOBS 
     ENGINEER,
+    PILOT,
 };
 
 typedef struct
@@ -28,5 +29,7 @@ int initCrew(int crewSize);
 int addCrewMember(crewMember *newCrewMember);
 crewMember *buildCrewMember(enum job job, char *name, size_t nameLength);
 int destroyCrewMember(size_t crewMemberId);
+crewMember *getCrewMemberFromArray(size_t crewMemberId, crewMember **arrayToLookIn, size_t arraySize);
+int modelEditCrewMember(crewMember *crewMemberToEdit, enum job job, char *name, size_t nameLength);
 
 #endif

@@ -19,6 +19,12 @@ int handleCrewCommand(char* cmd, size_t maxCmdLength)
         crewRm();
         return 0;
     }
+
+    if (strncmp(cmd, "crew edit\n", maxCmdLength) == 0)
+    {
+        crewEdit();
+        return 0;
+    }
     
     printf("'%s' is not a valid crew command.\n", cmd);
     return -1;
@@ -84,4 +90,25 @@ error_empty_crew_list:
 error_crew_member_not_found:
     displayError("The crew member could not be found");
     return -404;
+}
+
+int crewEdit()
+{
+    size_t crewMemberIdToEdit = promptForSize_T("Id of the crew member to edit :");
+    crewMember *crewMemberToEdit = getCrewMemberFromArray(crewMemberIdToEdit, crewList, crewListSize);
+
+    if (crewMemberToEdit == NULL)
+        goto error_crew_member_not_found;
+
+    enum job newJob = 0;
+    char newName[CREW_MEMBER_NAME_MAX_LENGTH] = "";
+
+    viewEditCrewMember(crewMemberToEdit, &newJob, newName, CREW_MEMBER_NAME_MAX_LENGTH);
+    modelEditCrewMember(crewMemberToEdit, newJob, newName, CREW_MEMBER_NAME_MAX_LENGTH);
+
+    return 0;
+
+error_crew_member_not_found:
+    displayError("There are no crew members with this Id");
+    return -1;
 }
