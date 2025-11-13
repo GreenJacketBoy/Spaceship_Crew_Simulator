@@ -24,16 +24,8 @@ int generateCrewMember(enum job *job, char *name, size_t nameLength)
     printf("Creating a crew member :\n");
 
     printf("Enter a name :\n");
-    printf(GRN BOLD);
-    if (fgets(name, nameLength, stdin) == NULL)
-    {
-        exitProgramIfStdinClosed();
+    if (promptForString(name, nameLength) != 0)
         goto error_reading_input;
-    }
-    printf(CRESET);
-    char *nameEndLineChar = strchr(name, '\n');
-    if (nameEndLineChar != NULL)
-        *nameEndLineChar = '\0';
 
     *job = promptForJob("Select a job :");
 
@@ -81,16 +73,8 @@ int viewEditCrewMember(crewMember *crewMemberToEdit, enum job *newJob, char *new
     printf("Editing a crew member :\n");
 
     printf("Enter a new name (previously " GRN "%s" CRESET "):\n", crewMemberToEdit->name);
-    printf(GRN BOLD);
-    if (fgets(newName, nameLength, stdin) == NULL)
-    {
-        exitProgramIfStdinClosed();
+    if (promptForString(newName, nameLength) != 0)
         goto error_reading_input;
-    }
-    printf(CRESET);
-    char *nameEndLineChar = strchr(newName, '\n');
-    if (nameEndLineChar != NULL)
-        *nameEndLineChar = '\0';
 
     bool isJobSelected = false;
 
@@ -111,7 +95,6 @@ int viewEditCrewMember(crewMember *crewMemberToEdit, enum job *newJob, char *new
     return 0;        
 
 error_reading_input:
-    printf(CRESET);
     return -1;
 }
 

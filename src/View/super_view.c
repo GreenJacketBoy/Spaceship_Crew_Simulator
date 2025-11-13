@@ -49,3 +49,24 @@ int displayError(char *errorMessage)
     printf(RED BOLD "ERROR : %s" CRESET "\n", errorMessage);
     return 0;
 }
+
+int promptForString(char *strBuffer, size_t strBufferLength)
+{
+    printf(GRN BOLD);
+    if (fgets(strBuffer, strBufferLength, stdin) == NULL)
+    {
+        exitProgramIfStdinClosed();
+        goto error_reading_input;
+    }
+    printf(CRESET);
+
+    char *nameEndLineChar = strchr(strBuffer, '\n');
+    if (nameEndLineChar != NULL)
+        *nameEndLineChar = '\0';
+
+    return 0;
+
+error_reading_input:
+    printf(CRESET);
+    return -1;
+}

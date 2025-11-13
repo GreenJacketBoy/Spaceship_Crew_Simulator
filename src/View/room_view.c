@@ -47,13 +47,8 @@ int promptRoomAttributes(
     printf("Creating a new room :\n");
 
     printf("Enter a name :\n");
-    printf(GRN BOLD);
-    if (fgets(name, nameLength, stdin) == NULL)
-    {
-        exitProgramIfStdinClosed();
+    if (promptForString(name, nameLength) != 0)
         goto error_reading_input;
-    }
-    printf(CRESET);
 
     char *nameEndLineChar = strchr(name, '\n');
     if (nameEndLineChar != NULL)
@@ -93,13 +88,8 @@ int viewRoomEdit(
     printf("Editing a room :\n");
 
     printf("Enter a new name (previously " GRN "%s" CRESET ") :\n", roomToEdit->name);
-    printf(GRN BOLD);
-    if (fgets(newName, newNameLength, stdin) == NULL)
-    {
-        exitProgramIfStdinClosed();
+    if (promptForString(newName, newNameLength) != 0)
         goto error_reading_input;
-    }
-    printf(CRESET);
 
     char *nameEndLineChar = strchr(newName, '\n');
     if (nameEndLineChar != NULL)
