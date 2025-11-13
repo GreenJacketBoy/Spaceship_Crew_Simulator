@@ -9,6 +9,7 @@
 #include "../Model/crew_model.h"
 #include "colors.h"
 #include "super_view.h"
+#include "../core.h"
 
 int listCrew();
 int getJobToString(enum job job, char *jobString, int jobStringMaxSize);

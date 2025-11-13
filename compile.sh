@@ -11,6 +11,7 @@ paths=(
     "src/Controller/room_controller.c"
 
     "src/main.c"
+    "src/core.c"
 )
 
 for path in "${paths[@]}"

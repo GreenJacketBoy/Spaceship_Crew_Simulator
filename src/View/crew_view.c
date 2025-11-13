@@ -25,15 +25,23 @@ int generateCrewMember(enum job *job, char *name, size_t nameLength)
 
     printf("Enter a name :\n");
     printf(GRN BOLD);
-    fgets(name, nameLength, stdin);
+    if (fgets(name, nameLength, stdin) == NULL)
+    {
+        exitProgramIfStdinClosed();
+        goto error_reading_input;
+    }
     printf(CRESET);
     char *nameEndLineChar = strchr(name, '\n');
     if (nameEndLineChar != NULL)
         *nameEndLineChar = '\0';
 
     *job = promptForJob("Select a job :");
+
  
     return 0;        
+
+error_reading_input:
+    return -1;
 }
 
 int viewRemoveCrewMember(size_t *crewMemberId)
@@ -74,7 +82,11 @@ int viewEditCrewMember(crewMember *crewMemberToEdit, enum job *newJob, char *new
 
     printf("Enter a new name (previously " GRN "%s" CRESET "):\n", crewMemberToEdit->name);
     printf(GRN BOLD);
-    fgets(newName, nameLength, stdin);
+    if (fgets(newName, nameLength, stdin) == NULL)
+    {
+        exitProgramIfStdinClosed();
+        goto error_reading_input;
+    }
     printf(CRESET);
     char *nameEndLineChar = strchr(newName, '\n');
     if (nameEndLineChar != NULL)
@@ -97,6 +109,10 @@ int viewEditCrewMember(crewMember *crewMemberToEdit, enum job *newJob, char *new
     *newJob = promptForJob(promptMessage);
 
     return 0;        
+
+error_reading_input:
+    printf(CRESET);
+    return -1;
 }
 
 int getJobToString(enum job job, char *jobString, int jobStringMaxSize) {

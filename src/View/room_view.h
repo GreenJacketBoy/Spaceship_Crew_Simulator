@@ -6,6 +6,7 @@
 #include "../Model/room_model.h"
 #include "colors.h"
 #include "super_view.h"
+#include "../core.h"
 
 #define ROOM_TYPE_STRING_MAX_LENGTH 64
 

@@ -35,8 +35,12 @@ int crewAdd()
     enum job job;
     char name[CREW_MEMBER_NAME_MAX_LENGTH];
 
-    generateCrewMember(&job, name, CREW_MEMBER_NAME_MAX_LENGTH);
-    
+    switch (generateCrewMember(&job, name, CREW_MEMBER_NAME_MAX_LENGTH))
+    {
+        case -1:
+            goto error_reading_input;
+    }
+ 
     crewMember *newCrewMember = buildCrewMember(job, name, CREW_MEMBER_NAME_MAX_LENGTH);
     if (newCrewMember == NULL)
         goto error_malloc_faillure_crew_member;
@@ -53,6 +57,9 @@ error_malloc_faillure_crew_list:
     displayError("Failed to allocate enough memory to update the crew list");
     free(newCrewMember);
     return -1;
+error_reading_input:
+    displayError("There's been an error when parsing the last input");
+    return -2;
 }
 
 int crewRm()
@@ -103,7 +110,8 @@ int crewEdit()
     enum job newJob = 0;
     char newName[CREW_MEMBER_NAME_MAX_LENGTH] = "";
 
-    viewEditCrewMember(crewMemberToEdit, &newJob, newName, CREW_MEMBER_NAME_MAX_LENGTH);
+    if (viewEditCrewMember(crewMemberToEdit, &newJob, newName, CREW_MEMBER_NAME_MAX_LENGTH))
+        goto error_reading_input;
     modelEditCrewMember(crewMemberToEdit, newJob, newName, CREW_MEMBER_NAME_MAX_LENGTH);
 
     return 0;
@@ -111,4 +119,7 @@ int crewEdit()
 error_crew_member_not_found:
     displayError("There are no crew members with this Id");
     return -1;
+error_reading_input:
+    displayError("There's been an error when parsing the last input");
+    return -2;
 }

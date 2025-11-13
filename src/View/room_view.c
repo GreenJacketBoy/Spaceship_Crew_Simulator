@@ -48,7 +48,11 @@ int promptRoomAttributes(
 
     printf("Enter a name :\n");
     printf(GRN BOLD);
-    fgets(name, nameLength, stdin);
+    if (fgets(name, nameLength, stdin) == NULL)
+    {
+        exitProgramIfStdinClosed();
+        goto error_reading_input;
+    }
     printf(CRESET);
 
     char *nameEndLineChar = strchr(name, '\n');
@@ -64,6 +68,10 @@ int promptRoomAttributes(
     *size = promptForSize_T("Enter size :");
  
     return 0;
+
+error_reading_input:
+    printf(CRESET);
+    return -1;
 }
 
 int viewRoomRm(size_t *roomIdToRemove)
@@ -86,7 +94,11 @@ int viewRoomEdit(
 
     printf("Enter a new name (previously " GRN "%s" CRESET ") :\n", roomToEdit->name);
     printf(GRN BOLD);
-    fgets(newName, newNameLength, stdin);
+    if (fgets(newName, newNameLength, stdin) == NULL)
+    {
+        exitProgramIfStdinClosed();
+        goto error_reading_input;
+    }
     printf(CRESET);
 
     char *nameEndLineChar = strchr(newName, '\n');
@@ -122,6 +134,10 @@ int viewRoomEdit(
     *newSize = promptForSize_T(sizePromptMessage);
  
     return 0;
+
+error_reading_input:
+    printf(CRESET);
+    return -1;
 }
 
 

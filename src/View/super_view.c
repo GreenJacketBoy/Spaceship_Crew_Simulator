@@ -3,10 +3,18 @@
 int promptForCommand(char *cmdPlusArgs, size_t maxLength) {
     printf("\nEnter a command :\n");
     printf(BOLD);
-    fgets(cmdPlusArgs, maxLength, stdin);
+    if (fgets(cmdPlusArgs, maxLength, stdin) == NULL)
+    {
+        exitProgramIfStdinClosed();
+        goto error_reading_input;
+    }
     printf(CRESET);
 
     return 0;
+
+error_reading_input:
+    printf(CRESET);
+    return -1;
 }
 
 size_t promptForSize_T(char *promptMessage)
@@ -16,16 +24,24 @@ size_t promptForSize_T(char *promptMessage)
 
     char userInput[256] = "";
     printf(BLU BOLD);
-    fgets(userInput, 256, stdin);
+    if (fgets(userInput, 256, stdin) == NULL)
+    {
+        exitProgramIfStdinClosed();
+        goto error_reading_input;
+    }
     printf(CRESET);
     
     char *endptr;
     size_t number = strtoul(userInput, &endptr, 0); 
     
-    // I know I'm not doing any error handling here but it's
+    // I know I'm not doing a ton of error handling here but it's
     // complicated + it doesn't cause too much problems so whatever
 
     return number; 
+
+error_reading_input:
+    printf(CRESET);
+    return 0;
 }
 
 int displayError(char *errorMessage)

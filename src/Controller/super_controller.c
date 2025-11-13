@@ -5,7 +5,8 @@ int promptAndRedirect()
     size_t maxCommandLength = 64;
     char commandPlusArgs[maxCommandLength];
     
-    promptForCommand(commandPlusArgs, maxCommandLength);
+    if (promptForCommand(commandPlusArgs, maxCommandLength) == -1)
+        return -3;
 
     size_t maxWordLength = 64;
     char commandWord[maxWordLength];

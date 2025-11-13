@@ -51,7 +51,8 @@ int roomAdd()
     size_t storageCapacity = 0;
     size_t size = 0;
 
-    promptRoomAttributes((char *) &name, ROOM_NAME_MAX_LENGTH, &roomType, &crewCapacity, &storageCapacity, &size);
+    if (promptRoomAttributes((char *) &name, ROOM_NAME_MAX_LENGTH, &roomType, &crewCapacity, &storageCapacity, &size) == -1)
+        goto error_reading_input;
 
     room *newRoom = createRoom(name, roomType, crewCapacity, storageCapacity, size);
     if (newRoom == NULL)
@@ -68,6 +69,9 @@ error_malloc_faillure_room_list:
     displayError("Failed to allocate enough memory to update the room list");
     free(newRoom);
     return -2;
+error_reading_input:
+    displayError("There's been an error when parsing the last input");
+    return -3;
 }
 
 int roomRm()
@@ -158,7 +162,8 @@ int roomEdit()
     size_t newStorageCapacity = 0;
     size_t newSize = 0;
 
-    viewRoomEdit(roomToEdit, newName, ROOM_NAME_MAX_LENGTH, &newType, &newCrewCapacity, &newStorageCapacity, &newSize);
+    if (viewRoomEdit(roomToEdit, newName, ROOM_NAME_MAX_LENGTH, &newType, &newCrewCapacity, &newStorageCapacity, &newSize) == -1)
+        goto error_reading_input;
     modelEditRoom(roomToEdit, newName, ROOM_NAME_MAX_LENGTH, newType, newCrewCapacity, newStorageCapacity, newSize);
 
     return 0;
@@ -166,4 +171,7 @@ int roomEdit()
 error_room_not_found:
     displayError("There are no rooms with this Id");
     return -1;
+error_reading_input:
+    displayError("There's been an error when parsing the last input");
+    return -2;
 }
