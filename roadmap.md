@@ -14,5 +14,5 @@ command line interface when the program is running :
   - **add** : add a room
   - **edit** : edit a room 
   - **rm** : remove a room
-  - **link** : make two rooms adjacents to one another
-  - **unlink** : make two rooms not adjacent anymore
+  -[ ] **link** : make two rooms adjacents to one another
+  -[x] **unlink** : make two rooms not adjacent anymore
