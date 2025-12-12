@@ -3,16 +3,18 @@
 One Spaceship with one crew :  
 
 command line interface when the program is running :  
-- **crew** :
-  - **ls** : list crew
-  - **add** : add a crew member
-  - **edit** : edit a crew member
-  - **rm** : remove a crew member
+- [x] **crew** :
+  - [x] **ls** : list crew
+  - [x] **add** : add a crew member
+  - [x] **edit** : edit a crew member
+  - [x] **rm** : remove a crew member
+  - [ ] **mv** : move a crew member to a reachable room
+  - [ ] **link_dump** : display all crew room links
 
-- **room** :
-  - **ls** : list all rooms and their connections
-  - **add** : add a room
-  - **edit** : edit a room 
-  - **rm** : remove a room
-  - **link** : make two rooms adjacents to one another
-  - **unlink** : make two rooms not adjacent anymore
+- [x] **room** :
+  - [x] **ls** : list all rooms and their connections
+  - [x] **add** : add a room
+  - [x] **edit** : edit a room 
+  - [x] **rm** : remove a room
+  - [x] **link** : make two rooms adjacents to one another
+  - [x] **unlink** : make two rooms not adjacent anymore

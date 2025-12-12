@@ -5,6 +5,7 @@ paths=(
 
     "src/Model/crew_model.c"
     "src/Model/room_model.c"
+    "src/Model/crew_room_linker_model.c"
 
     "src/Controller/crew_controller.c"
     "src/Controller/super_controller.c"

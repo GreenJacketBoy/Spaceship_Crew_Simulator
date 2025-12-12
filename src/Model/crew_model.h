@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "crew_room_linker_model.h"
 
 enum job { // Try not to forget to update AMOUNT_OF_DIFFERENT_JOBS 
     ENGINEER,

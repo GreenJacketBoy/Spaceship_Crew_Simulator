@@ -5,14 +5,17 @@
 #include <stdbool.h>
 #include "../View/super_view.h"
 
-typedef struct crewMember crewMember; // forward def from Model/crew_model.h
-typedef struct room room; // forward def from Model/room_model.h
+// *_FromCRLinker represents * from other models, their name is different to avoid
+// redifining errors when including them. This does mean however that I can't use
+// attributes from * in the methods of this model
+typedef struct crewMember_FromCRLinker crewMember_FromCRLinker;
+typedef struct room_FromCRLinker room_FromCRLinker;
 
 typedef struct
 {
-    crewMember *crewMember;
-    room *currentRoom; /** The room inside which the crew member is */
-    room *destinationRoom; /** The room where the crew member is headed (can be NULL) */
+    crewMember_FromCRLinker *crewMember;
+    room_FromCRLinker *currentRoom; /** The room inside which the crew member is */
+    room_FromCRLinker *destinationRoom; /** The room where the crew member is headed (can be NULL) */
 } crewRoomLink;
 
 extern crewRoomLink **crewRoomLinker;
@@ -29,14 +32,14 @@ int removeFromCrewRoomLinker(
     crewRoomLink *crewRoomLinkToRm
 );
 crewRoomLink *buildCrewRoomLink(
-    crewMember *crewMember,
-    room *currentRoom,
-    room *destinationRoom
+    crewMember_FromCRLinker *crewMember,
+    room_FromCRLinker *currentRoom,
+    room_FromCRLinker *destinationRoom
 );
 crewRoomLink *getCrewRoomLinkByCrewMember(
     crewRoomLink **crewRoomLinkerToLookIn,
     size_t crewRoomLinkerToLookInSize,
-    crewMember *crewMemberToLookFor
+    crewMember_FromCRLinker *crewMemberToLookFor
 );
 
 #endif // !CREW_ROOM_LINKER_MODEL_H
