@@ -9,7 +9,6 @@
 
 int promptForCommand(char* cmdPlusArgs, size_t maxLength);
 size_t promptForSize_T(char *promptMessage);
-int displayError(char *errorMessage);
 int promptForString(char *strBuffer, size_t strBufferLength);
 
 #endif

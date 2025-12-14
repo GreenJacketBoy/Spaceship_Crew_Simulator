@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-#include "../View/super_view.h"
+#include "../core.h"
 
 // *_FromCRLinker represents * from other models, their name is different to avoid
 // redifining errors when including them. This does mean however that I can't use

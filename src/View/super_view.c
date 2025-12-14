@@ -44,12 +44,6 @@ error_reading_input:
     return 0;
 }
 
-int displayError(char *errorMessage)
-{
-    printf(RED BOLD "ERROR : %s" CRESET "\n", errorMessage);
-    return 0;
-}
-
 int promptForString(char *strBuffer, size_t strBufferLength)
 {
     printf(GRN BOLD);

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "../Model/room_model.h"
 #include "../View/room_view.h"
+#include "../core.h"
 
 
 int handleRoomCommand(char* cmd, size_t maxCmdLength);

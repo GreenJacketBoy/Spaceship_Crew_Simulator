@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "../Model/crew_model.h"
 #include "../View/crew_view.h"
-#include "../View/super_view.h"
+#include "../core.h"
 
 
 int handleCrewCommand(char* cmd, size_t maxCmdLength);

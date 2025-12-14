@@ -13,12 +13,18 @@ void fuckShitExitNow(int errorCode)
     switch (errorCode)
     {
         case -1:
-            printf(RED BOLD "\nERROR : The stdin stream has been closed by the user (likely with Ctrl+D)" CRESET "\n");
+            displayError("The stdin stream has been closed by the user (likely with Ctrl+D)");
             break;
         default:
-            printf(RED BOLD "\nERROR : An unspecified error has caused the termination of the program" CRESET "\n");
+            displayError("An unspecified error has caused the termination of the program");
             break;
     }
 
     exit(EXIT_FAILURE);
+}
+
+int displayError(char *errorMessage)
+{
+    printf(RED BOLD "ERROR : %s" CRESET "\n", errorMessage);
+    return 0;
 }

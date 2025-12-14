@@ -9,5 +9,6 @@
 
 void fuckShitExitNow(int errorCode);
 int exitProgramIfStdinClosed();
+int displayError(char *errorMessage);
 
 #endif
