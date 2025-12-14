@@ -9,7 +9,6 @@ command line interface when the program is running :
   - [x] **edit** : edit a crew member
   - [x] **rm** : remove a crew member
   - [ ] **mv** : move a crew member to a reachable room
-  - [ ] **link_dump** : display all crew room links
 
 - [x] **room** :
   - [x] **ls** : list all rooms and their connections
@@ -18,3 +17,6 @@ command line interface when the program is running :
   - [x] **rm** : remove a room
   - [x] **link** : make two rooms adjacents to one another
   - [x] **unlink** : make two rooms not adjacent anymore
+
+- [x] **linker** :
+  - [x] **ls** : display all crew room links

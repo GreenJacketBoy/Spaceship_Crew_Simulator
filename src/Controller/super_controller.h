@@ -4,11 +4,13 @@
 #include <string.h>
 #include "crew_controller.h"
 #include "room_controller.h"
+#include "crew_room_linker_controller.h"
 #include "../core.h"
 
 enum controller {
     CREW,
     ROOM,
+    CREW_ROOM_LINKER,
 };
 
 int promptAndRedirect();
