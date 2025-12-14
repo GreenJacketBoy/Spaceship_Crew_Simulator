@@ -8,6 +8,7 @@
 
 
 int handleRoomCommand(char* cmd, size_t maxCmdLength);
+int roomLs();
 int roomAdd();
 int roomRm();
 int roomLink();

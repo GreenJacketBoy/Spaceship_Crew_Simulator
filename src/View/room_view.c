@@ -1,6 +1,6 @@
 #include "room_view.h"
 
-int listRooms()
+int listRooms(room **roomList, size_t roomListSize)
 {
     printf("Rooms (" BLU BOLD "%zu" CRESET "):\n", roomListSize);
 

@@ -71,9 +71,9 @@ not_found:
 }
 
 crewRoomLink *buildCrewRoomLink(
-    crewMember_FromCRLinker *crewMember,
-    room_FromCRLinker *currentRoom,
-    room_FromCRLinker *destinationRoom
+    crewMember *crewMember,
+    room *currentRoom,
+    room *destinationRoom
 )
 {
     crewRoomLink *newCrewRoomLink = malloc(sizeof(crewRoomLink));
@@ -93,7 +93,7 @@ error_malloc_failure:
 crewRoomLink *getCrewRoomLinkByCrewMember(
     crewRoomLink **crewRoomLinkerToLookIn,
     size_t crewRoomLinkerToLookInSize,
-    crewMember_FromCRLinker *crewMemberToLookFor
+    crewMember *crewMemberToLookFor
 )
 {
     for (size_t i = 0; i < crewRoomLinkerToLookInSize; i++)

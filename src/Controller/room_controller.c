@@ -4,7 +4,7 @@ int handleRoomCommand(char* cmd, size_t maxCmdLength)
 {
     if (strncmp(cmd, "room ls\n", maxCmdLength) == 0)
     {
-        listRooms();
+        roomLs();
         return 0;
     }
 
@@ -40,6 +40,11 @@ int handleRoomCommand(char* cmd, size_t maxCmdLength)
     
     printf("'%s' is not a valid room command.\n", cmd);
     return -1;
+}
+
+int roomLs()
+{
+    return listRooms(roomList, roomListSize);
 }
 
 int roomAdd()

@@ -1,6 +1,6 @@
 #include "crew_view.h"
 
-int listCrew() {
+int listCrew(crewMember **crewList, size_t crewListSize) {
     printf("Crew : (" BLU BOLD "%zu" CRESET ")\n", crewListSize);
 
     if (crewListSize == 0)

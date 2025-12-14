@@ -22,7 +22,7 @@ int addCrewMember(crewMember *newCrewMember)
     free(crewList);
     crewList = newCrewList;
 
-    crewRoomLink *newCrewRoomLink = buildCrewRoomLink((crewMember_FromCRLinker *) newCrewMember, NULL, NULL);
+    crewRoomLink *newCrewRoomLink = buildCrewRoomLink((crewMember *) newCrewMember, NULL, NULL);
     if (newCrewMember == NULL)
         goto error_build_linker;
     if (addToCrewRoomLinker(&crewRoomLinker, &crewRoomLinkerSize, newCrewRoomLink) != 0)
@@ -90,7 +90,7 @@ int destroyCrewMember(size_t crewMemberId)
         {
             crewMemberWasFound = true;
             crewMember *crewMemberToDestroy = crewList[i];
-            crewRoomLink *crewRoomLinkToRemove = getCrewRoomLinkByCrewMember(crewRoomLinker, crewRoomLinkerSize, (crewMember_FromCRLinker *) crewMemberToDestroy);
+            crewRoomLink *crewRoomLinkToRemove = getCrewRoomLinkByCrewMember(crewRoomLinker, crewRoomLinkerSize, (crewMember *) crewMemberToDestroy);
             if (crewRoomLinkToRemove == NULL)
                 goto error_link_not_found;
             if (removeFromCrewRoomLinker(&crewRoomLinker, &crewRoomLinkerSize, crewRoomLinkToRemove) != 0)

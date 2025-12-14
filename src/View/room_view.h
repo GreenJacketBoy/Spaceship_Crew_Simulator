@@ -3,14 +3,15 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "../Model/room_model.h"
+#include <stdbool.h>
+#include "../Model/type_definitions.h"
 #include "colors.h"
 #include "super_view.h"
 #include "../core.h"
 
 #define ROOM_TYPE_STRING_MAX_LENGTH 64
 
-int listRooms();
+int listRooms(room **roomList, size_t roomListSize);
 int printRoomWithPrefix(char *prefix, room *room);
 int getRoomTypeToString(enum roomType roomType, char *roomTypeStringBuffer, size_t roomTypeStringMaxLength);
 int promptRoomAttributes(

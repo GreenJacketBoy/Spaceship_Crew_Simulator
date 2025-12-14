@@ -4,7 +4,7 @@ int handleCrewCommand(char* cmd, size_t maxCmdLength)
 {
     if (strncmp(cmd, "crew ls\n", maxCmdLength) == 0)
     {
-        listCrew();
+        listCrew(crewList, crewListSize);
         return 0;
     }
     
