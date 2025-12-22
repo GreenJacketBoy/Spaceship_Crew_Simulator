@@ -13,5 +13,6 @@ int crewRm();
 int crewEdit();
 int crewMv(room **roomList, size_t roomListSize);
 int crewGoto(room **roomList, size_t roomListSize);
+int crewShow();
 
 #endif

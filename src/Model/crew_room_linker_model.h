@@ -29,5 +29,10 @@ crewRoomLink *getCrewRoomLinkByCrewMember(
     size_t crewRoomLinkerToLookInSize,
     crewMember *crewMemberToLookFor
 );
+crewRoomLink *getCrewRoomLinkByCrewMemberId(
+    crewRoomLink **crewRoomLinkerToLookIn,
+    size_t crewRoomLinkerToLookInSize,
+    size_t crewMemberIdToLookFor
+);
 
 #endif // !CREW_ROOM_LINKER_MODEL_H

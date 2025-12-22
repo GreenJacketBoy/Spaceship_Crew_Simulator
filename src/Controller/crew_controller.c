@@ -37,6 +37,12 @@ int handleCrewCommand(char* cmd, size_t maxCmdLength, room **roomList, size_t ro
         crewGoto(roomList, roomListSize);
         return 0;
     }
+
+    if (strncmp(cmd, "crew show\n", maxCmdLength) == 0)
+    {
+        crewShow();   
+        return 0;
+    }
     
     printf("'%s' is not a valid crew command.\n", cmd);
     return -1;
@@ -164,6 +170,22 @@ int crewGoto(room **roomList, size_t roomListSize)
 
     size_t roomIdNewDestination = promptForSize_T("Id of the room set to be the new destination :");
     modelCrewMemberGoTo(crewMemberToMove, roomIdNewDestination, roomList, roomListSize);
+
+    return 0;
+
+error_crew_member_not_found:
+    displayError("There are no crew members with this Id");
+    return -1;
+}
+
+int crewShow()
+{
+    size_t crewMemberIdToShow = promptForSize_T("Id of the crew member to show :");
+    crewRoomLink *crewRoomLinkToShow = getCrewRoomLinkByCrewMemberId(crewRoomLinker, crewRoomLinkerSize, crewMemberIdToShow);
+    if (crewRoomLinkToShow == NULL)
+        goto error_crew_member_not_found;
+
+    viewShowCrewMember(crewRoomLinkToShow);
 
     return 0;
 

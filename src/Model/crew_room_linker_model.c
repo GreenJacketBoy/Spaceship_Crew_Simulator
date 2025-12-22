@@ -104,3 +104,18 @@ crewRoomLink *getCrewRoomLinkByCrewMember(
 
     return NULL;
 }
+
+crewRoomLink *getCrewRoomLinkByCrewMemberId(
+    crewRoomLink **crewRoomLinkerToLookIn,
+    size_t crewRoomLinkerToLookInSize,
+    size_t crewMemberIdToLookFor
+)
+{
+    for (size_t i = 0; i < crewRoomLinkerToLookInSize; i++)
+    {
+        if (crewRoomLinkerToLookIn[i]->crewMember->id == crewMemberIdToLookFor)
+            return crewRoomLinkerToLookIn[i];
+    }
+
+    return NULL;
+}

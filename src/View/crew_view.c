@@ -98,6 +98,33 @@ error_reading_input:
     return -1;
 }
 
+int viewShowCrewMember(crewRoomLink *crewRoomLinkToDisplay)
+{
+    crewMember *crewMemberToDiplay = crewRoomLinkToDisplay->crewMember;
+    room *currentRoom = crewRoomLinkToDisplay->currentRoom;
+    room *destinationRoom = crewRoomLinkToDisplay->destinationRoom;
+
+    char jobString[JOB_STRING_MAX_LENGTH] = "";
+    getJobToString(crewMemberToDiplay->job, jobString, JOB_STRING_MAX_LENGTH);
+
+    printf("Crew member's details :\n");
+    printf("- " BOLD "Id:   " CRESET YEL BOLD "#%zu" CRESET "\n", crewMemberToDiplay->id);
+    printf("- " BOLD "Name: " CRESET GRN BOLD "%s" CRESET "\n", crewMemberToDiplay->name);
+    printf("- " BOLD "Job:  " CRESET BLU "%s" CRESET "\n", jobString);
+    if (currentRoom == NULL)
+        printf("- Current location:    " RED BOLD "Not found" CRESET "\n");
+    else
+        printf("- Current location:    " YEL BOLD "#%zu " BLU BOLD "%s" CRESET "\n", currentRoom->id, currentRoom->name);
+
+    if (destinationRoom == NULL)
+        printf("- Current destination: " RED BOLD "Not found" CRESET "\n");
+    else
+        printf("- Current destination: " YEL BOLD "#%zu " BLU BOLD "%s" CRESET "\n", destinationRoom->id, destinationRoom->name);
+
+    return 0;
+}
+
+
 int getJobToString(enum job job, char *jobString, int jobStringMaxSize) {
     switch (job)
     {
