@@ -31,6 +31,12 @@ int handleCrewCommand(char* cmd, size_t maxCmdLength, room **roomList, size_t ro
         crewMv(roomList, roomListSize);
         return 0;
     }
+
+    if (strncmp(cmd, "crew goto\n", maxCmdLength) == 0)
+    {
+        crewGoto(roomList, roomListSize);
+        return 0;
+    }
     
     printf("'%s' is not a valid crew command.\n", cmd);
     return -1;
@@ -138,7 +144,7 @@ int crewMv(room **roomList, size_t roomListSize)
     if (crewMemberToMove == NULL)
         goto error_crew_member_not_found;
 
-    size_t roomIdToMoveTo = promptForSize_T("Id of the room to move to");
+    size_t roomIdToMoveTo = promptForSize_T("Id of the room to move to :");
     modelMoveCrewMember(crewMemberToMove, roomIdToMoveTo, roomList, roomListSize);
 
     return 0;
@@ -146,7 +152,22 @@ int crewMv(room **roomList, size_t roomListSize)
 error_crew_member_not_found:
     displayError("There are no crew members with this Id");
     return -1;
-error_reading_input:
-    displayError("There's been an error when parsing the last input");
-    return -2;
+}
+
+int crewGoto(room **roomList, size_t roomListSize)
+{
+    size_t crewMemberIdToMove = promptForSize_T("Id of the crew member whose destination you want to change :");
+    crewMember *crewMemberToMove = getCrewMemberFromArray(crewMemberIdToMove, crewList, crewListSize);
+
+    if (crewMemberToMove == NULL)
+        goto error_crew_member_not_found;
+
+    size_t roomIdNewDestination = promptForSize_T("Id of the room set to be the new destination :");
+    modelCrewMemberGoTo(crewMemberToMove, roomIdNewDestination, roomList, roomListSize);
+
+    return 0;
+
+error_crew_member_not_found:
+    displayError("There are no crew members with this Id");
+    return -1;
 }

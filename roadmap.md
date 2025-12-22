@@ -9,7 +9,7 @@ command line interface when the program is running :
   - [x] **edit** : edit a crew member
   - [x] **rm** : remove a crew member
   - [x] **mv** : move a crew member to a reachable room
-  - [ ] **goto** : change the destination roon of a crew member
+  - [x] **goto** : change the destination room of a crew member
 
 - [x] **room** :
   - [x] **ls** : list all rooms and their connections

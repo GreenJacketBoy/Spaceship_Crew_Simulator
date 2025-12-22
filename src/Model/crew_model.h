@@ -20,5 +20,6 @@ int destroyCrewMember(size_t crewMemberId);
 crewMember *getCrewMemberFromArray(size_t crewMemberId, crewMember **arrayToLookIn, size_t arraySize);
 int modelEditCrewMember(crewMember *crewMemberToEdit, enum job job, char *name, size_t nameLength);
 int modelMoveCrewMember(crewMember *crewMemberToMove, size_t roomIdToMoveTo, room **roomList, size_t roomListSize);
+int modelCrewMemberGoTo(crewMember *crewMemberToMove, size_t roomIdNewDestination, room **roomList, size_t roomListSize);
 
 #endif
