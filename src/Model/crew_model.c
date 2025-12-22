@@ -142,3 +142,25 @@ int modelEditCrewMember(crewMember *crewMemberToEdit, enum job job, char *name, 
 
     return 0;
 }
+
+int modelMoveCrewMember(crewMember *crewMemberToMove, size_t roomIdToMoveTo, room **roomList, size_t roomListSize)
+{
+    for (size_t i = 0; i < roomListSize; i++)
+    {
+        if (roomList[i]->id == roomIdToMoveTo)
+        {
+            crewRoomLink *crewRoomLinkToModify = getCrewRoomLinkByCrewMember(crewRoomLinker, crewRoomLinkerSize, crewMemberToMove);
+            if (crewRoomLinkToModify == NULL)
+                goto error_crew_room_link_404;
+            crewRoomLinkToModify->currentRoom = roomList[i];
+            return 0;
+        }
+    }
+
+    displayError("The room is not in the roomArray");
+    return -1;
+
+error_crew_room_link_404:
+    displayError("The crewRoomLink associated to the crewMember doesn't exist");
+    return -2;
+}

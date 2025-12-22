@@ -21,7 +21,9 @@ int promptAndRedirect()
     switch (controllerToRedirectTo)
     {
     case CREW:
-        handleCrewCommand(commandPlusArgs, maxCommandLength);
+        // passing the roomList array as an argument was the least hacky thing I could do
+        // I need it for moving a crew member
+        handleCrewCommand(commandPlusArgs, maxCommandLength, roomList, roomListSize);
         break;
     case ROOM:
         handleRoomCommand(commandPlusArgs, maxCommandLength);

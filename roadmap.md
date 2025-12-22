@@ -8,7 +8,8 @@ command line interface when the program is running :
   - [x] **add** : add a crew member
   - [x] **edit** : edit a crew member
   - [x] **rm** : remove a crew member
-  - [ ] **mv** : move a crew member to a reachable room
+  - [x] **mv** : move a crew member to a reachable room
+  - [ ] **goto** : change the destination roon of a crew member
 
 - [x] **room** :
   - [x] **ls** : list all rooms and their connections

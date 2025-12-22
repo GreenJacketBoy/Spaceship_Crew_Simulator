@@ -7,9 +7,10 @@
 #include "../core.h"
 
 
-int handleCrewCommand(char* cmd, size_t maxCmdLength);
+int handleCrewCommand(char* cmd, size_t maxCmdLength, room **roomList, size_t roomListSize);
 int crewAdd();
 int crewRm();
 int crewEdit();
+int crewMv(room **roomList, size_t roomListSize);
 
 #endif

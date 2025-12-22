@@ -1,6 +1,6 @@
 #include "crew_controller.h"
 
-int handleCrewCommand(char* cmd, size_t maxCmdLength)
+int handleCrewCommand(char* cmd, size_t maxCmdLength, room **roomList, size_t roomListSize)
 {
     if (strncmp(cmd, "crew ls\n", maxCmdLength) == 0)
     {
@@ -23,6 +23,12 @@ int handleCrewCommand(char* cmd, size_t maxCmdLength)
     if (strncmp(cmd, "crew edit\n", maxCmdLength) == 0)
     {
         crewEdit();
+        return 0;
+    }
+
+    if (strncmp(cmd, "crew mv\n", maxCmdLength) == 0)
+    {
+        crewMv(roomList, roomListSize);
         return 0;
     }
     
@@ -113,6 +119,27 @@ int crewEdit()
     if (viewEditCrewMember(crewMemberToEdit, &newJob, newName, CREW_MEMBER_NAME_MAX_LENGTH))
         goto error_reading_input;
     modelEditCrewMember(crewMemberToEdit, newJob, newName, CREW_MEMBER_NAME_MAX_LENGTH);
+
+    return 0;
+
+error_crew_member_not_found:
+    displayError("There are no crew members with this Id");
+    return -1;
+error_reading_input:
+    displayError("There's been an error when parsing the last input");
+    return -2;
+}
+
+int crewMv(room **roomList, size_t roomListSize)
+{
+    size_t crewMemberIdToMove = promptForSize_T("Id of the crew member to move :");
+    crewMember *crewMemberToMove = getCrewMemberFromArray(crewMemberIdToMove, crewList, crewListSize);
+
+    if (crewMemberToMove == NULL)
+        goto error_crew_member_not_found;
+
+    size_t roomIdToMoveTo = promptForSize_T("Id of the room to move to");
+    modelMoveCrewMember(crewMemberToMove, roomIdToMoveTo, roomList, roomListSize);
 
     return 0;
 
