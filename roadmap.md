@@ -19,7 +19,7 @@ command line interface when the program is running :
   - [x] **rm** : remove a room
   - [x] **link** : make two rooms adjacents to one another
   - [x] **unlink** : make two rooms not adjacent anymore
-  - [ ] **show** : diaplay details of a room
+  - [x] **show** : diaplay details of a room
 
 - [x] **linker** :
   - [x] **ls** : display all crew room links

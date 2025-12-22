@@ -26,7 +26,7 @@ int promptAndRedirect()
         handleCrewCommand(commandPlusArgs, maxCommandLength, roomList, roomListSize);
         break;
     case ROOM:
-        handleRoomCommand(commandPlusArgs, maxCommandLength);
+        handleRoomCommand(commandPlusArgs, maxCommandLength, crewRoomLinker, crewRoomLinkerSize);
         break;
     case CREW_ROOM_LINKER:
         handleCrewRoomLinkerCommand(commandPlusArgs, maxCommandLength);

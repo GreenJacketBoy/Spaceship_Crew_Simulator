@@ -119,3 +119,19 @@ crewRoomLink *getCrewRoomLinkByCrewMemberId(
 
     return NULL;
 }
+
+size_t getAmountOfCrewMemberInRoom(
+    crewRoomLink **crewRoomLinkerToLookIn,
+    size_t crewRoomLinkerToLookInSize,
+    size_t roomIdToLookFor
+)
+{
+    size_t crewMemberCount = 0;
+    for (size_t i = 0; i < crewRoomLinkerToLookInSize; i++)
+    {
+        if (crewRoomLinkerToLookIn[i]->currentRoom->id == roomIdToLookFor)
+            crewMemberCount++;
+    }
+
+    return crewMemberCount;
+}

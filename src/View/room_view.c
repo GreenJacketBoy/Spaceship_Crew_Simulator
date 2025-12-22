@@ -10,26 +10,15 @@ int listRooms(room **roomList, size_t roomListSize)
         return 0;
     }
     
-    
     for (size_t i = 0; i < roomListSize; i++)
     {
         room *currentRoom = roomList[i];
-        printf(YEL BOLD "<===============>\n" CRESET);
-        printRoomWithPrefix("", currentRoom);
-        printf("Adjacent rooms (" BLU BOLD "%d" CRESET ") :\n", currentRoom->adjacentRoomsArraySize);
+        char roomTypeString[ROOM_TYPE_STRING_MAX_LENGTH];
+        getRoomTypeToString(currentRoom->roomType, roomTypeString, ROOM_TYPE_STRING_MAX_LENGTH);
 
-        if (currentRoom->adjacentRoomsArraySize == 0)
-        {
-            printf("  " RED ITALIC "No Adjacent Rooms" CRESET "\n");
-        }
-
-        room **adjacentRooms = currentRoom->adjacentRoomsArray;
-
-        for (size_t j = 0; j < currentRoom->adjacentRoomsArraySize; j++)
-        {
-            printRoomWithPrefix(RED BOLD "  - " CRESET, adjacentRooms[j]);
-        }
-    
+        printf("- " YEL BOLD " #%zu" CRESET BOLD " %s" CRESET " (" GRN "%s" CRESET ") " RED "[" BLU BOLD "%zu" CRESET " adjacent rooms" RED "]" CRESET "\n", 
+            currentRoom->id, currentRoom->name, roomTypeString, currentRoom->adjacentRoomsArraySize
+        );
     }
 
     return 0;
@@ -128,6 +117,51 @@ int viewRoomEdit(
 error_reading_input:
     printf(CRESET);
     return -1;
+}
+
+int viewShowRoom(room *roomToShow, crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize)
+{
+    char typeString[ROOM_TYPE_STRING_MAX_LENGTH] = "";
+    getRoomTypeToString(roomToShow->roomType, typeString, ROOM_TYPE_STRING_MAX_LENGTH);
+
+    size_t amountOfCrewMembersInRoom = 0;
+    for (size_t i = 0; i < crewRoomLinkerSize; i++)
+        if (crewRoomLinker[i]->currentRoom == roomToShow)
+            amountOfCrewMembersInRoom++;
+
+    printf("Room's details :\n");
+    printf("- " BOLD "Id:   " CRESET YEL BOLD "#%zu" CRESET "\n", roomToShow->id);
+    printf("- " BOLD "Name: " CRESET GRN BOLD "%s" CRESET "\n", roomToShow->name);
+    printf("- " BOLD "Type: " CRESET BLU BOLD "%s" CRESET "\n", typeString);
+    printf("- " BOLD "Size: " CRESET BLU BOLD "%zu" CRESET "\n", roomToShow->size);
+    printf("- " BOLD "Storage:       " BLU BOLD "?" CRESET RED "/" BLU BOLD "%zu" CRESET "\n", roomToShow->storageCapacity);
+    printf("- " BOLD "Crew Capacity: " BLU BOLD "%zu" CRESET RED "/" BLU BOLD "%zu" CRESET "\n", amountOfCrewMembersInRoom, roomToShow->crewCapacity);
+
+    if (roomToShow->adjacentRoomsArraySize == 0)
+        printf("- Adjacent Rooms: " RED BOLD "None" CRESET "\n");
+    else
+    {
+        printf("- Adjacent Rooms (" BLU BOLD "%zu" CRESET "):\n", roomToShow->adjacentRoomsArraySize);
+
+        for (size_t i = 0; i < roomToShow->adjacentRoomsArraySize; i++)
+        {
+            room *adjacentRoom = roomToShow->adjacentRoomsArray[i];
+            printf("  * " YEL BOLD "#%zu" GRN BOLD " %s" CRESET "\n", adjacentRoom->id, adjacentRoom->name);
+        }
+    }
+
+    if (amountOfCrewMembersInRoom == 0)
+        printf("- Crew Members in the Room :" RED BOLD " None" CRESET "\n");
+    else
+    {
+        printf("- Crew Members in the Room :\n");
+        for (size_t i = 0; i < crewRoomLinkerSize; i++)
+            if (crewRoomLinker[i]->currentRoom == roomToShow)
+                printf("  * " YEL BOLD "#%zu" GRN BOLD " %s" CRESET "\n",
+                    crewRoomLinker[i]->crewMember->id, crewRoomLinker[i]->crewMember->name);
+    }
+
+    return 0;
 }
 
 

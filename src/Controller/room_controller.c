@@ -1,6 +1,6 @@
 #include "room_controller.h"
 
-int handleRoomCommand(char* cmd, size_t maxCmdLength)
+int handleRoomCommand(char* cmd, size_t maxCmdLength, crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize)
 {
     if (strncmp(cmd, "room ls\n", maxCmdLength) == 0)
     {
@@ -35,6 +35,12 @@ int handleRoomCommand(char* cmd, size_t maxCmdLength)
     if (strncmp(cmd, "room edit\n", maxCmdLength) == 0)
     {
         roomEdit();
+        return 0;
+    }
+
+    if (strncmp(cmd, "room show\n", maxCmdLength) == 0)
+    {
+        roomShow(crewRoomLinker, crewRoomLinkerSize);
         return 0;
     }
     
@@ -179,4 +185,19 @@ error_room_not_found:
 error_reading_input:
     displayError("There's been an error when parsing the last input");
     return -2;
+}
+
+int roomShow(crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize)
+{
+    size_t roomId = promptForSize_T("Id of the room to show :");
+    room *roomToShow = getRoomInArray(roomList, roomListSize, roomId);
+    if (roomToShow == NULL)
+        goto error_room_not_found;
+
+    viewShowRoom(roomToShow, crewRoomLinker, crewRoomLinkerSize);
+    return 0;
+
+error_room_not_found:
+    displayError("There are no rooms with this Id");
+    return -1;
 }

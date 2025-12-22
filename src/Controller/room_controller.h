@@ -7,12 +7,13 @@
 #include "../core.h"
 
 
-int handleRoomCommand(char* cmd, size_t maxCmdLength);
+int handleRoomCommand(char* cmd, size_t maxCmdLength, crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize);
 int roomLs();
 int roomAdd();
 int roomRm();
 int roomLink();
 int roomUnlink();
 int roomEdit();
+int roomShow(crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize);
 
 #endif
