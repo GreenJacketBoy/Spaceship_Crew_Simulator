@@ -15,6 +15,7 @@ paths=(
 
     "src/main.c"
     "src/core.c"
+    "src/config_parser.c"
 )
 
 for path in "${paths[@]}"

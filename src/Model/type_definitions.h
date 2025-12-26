@@ -62,4 +62,15 @@ typedef struct
     room *destinationRoom; /** The room where the crew member is headed (can be NULL) */
 } crewRoomLink;
 
+/* 
+ * CONFIG
+ */
+
+enum configType
+{
+    STRING,
+    INT,
+    ARRAY_OF_INT,
+};
+
 #endif // !TYPE_DEFINITIONS_H

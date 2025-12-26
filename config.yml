@@ -1,0 +1,20 @@
+# Default config
+
+crewMember:
+  id: 1 # Int
+  # String
+  # For String only, comments on the same line are not supported,
+  # and are counted as the string
+  name: James
+  job: 1 # Int
+  currentRoom: 1 # Int
+
+room:
+  id: 1 # Int
+  # String
+  name: Medbay 1
+  type: 2 # Int
+  size: 25 # Int
+  maxCrew: 8 # Int
+  storage: 8 # Int
+  adjacentRooms: [] # Int[]

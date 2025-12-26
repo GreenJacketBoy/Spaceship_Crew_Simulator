@@ -2,6 +2,7 @@
 
 int main() 
 {
+    configCheckIntegrity();
     initCrew(4);
     initRoom(0);
     
