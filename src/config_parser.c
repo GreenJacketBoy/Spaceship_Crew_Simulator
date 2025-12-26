@@ -2,44 +2,62 @@
 
 int configCheckIntegrity()
 {
-    FILE *fptr = fopen("config.yml", "r");
-    if (fptr == NULL)
-        goto error_opening_file;
-
-    char fileContent[MAX_LINE_LENGTH] = "";
-
-    size_t lineNumber = 1;
-    while (fgets(fileContent, MAX_LINE_LENGTH, fptr) != NULL)
+    switch (configCheckIntegrityAllFieldsPresentForAllObjects("config.yml"))
     {
-        if (isRestOfTheLineEmpty(fileContent))
-        {
-            lineNumber++;
-        }
-        else if (configLineStartsWith(fileContent, "room:"))
-        {
-            if (!configCheckIntegrityRoom(fileContent, &lineNumber, fptr))
-                goto error_generic;
-        }
-        else if (configLineStartsWith(fileContent, "crewMember:"))
-        {
-            if (!configCheckIntegrityCrewMember(fileContent, &lineNumber, fptr))
-                goto error_generic;
-        }
-        else
-            goto error_unexpected_character;
+        case -1: goto error_opening_file;
+        case -2: goto error_generic;
+        default: break;
     }
+
     printf("The configuration file has been validated.\n");
 
     return 0;
 error_opening_file:
     displayError("Configuration file not found, continuing without.");
     return -1;
+error_generic:
+    printf("Ignoring the configuration file, continuing.\n");
+    return -2;
+}
+
+int configCheckIntegrityAllFieldsPresentForAllObjects(char *configFilePath)
+{
+    FILE *fptr = fopen(configFilePath, "r");
+    if (fptr == NULL)
+        goto error_opening_file;
+
+    char lineBuffer[MAX_LINE_LENGTH] = "";
+
+    size_t lineNumber = 1;
+    while (fgets(lineBuffer, MAX_LINE_LENGTH, fptr) != NULL)
+    {
+        if (isRestOfTheLineEmpty(lineBuffer))
+        {
+            lineNumber++;
+        }
+        else if (configLineStartsWith(lineBuffer, "room:"))
+        {
+            if (!configCheckIntegrityRoom(lineBuffer, &lineNumber, fptr))
+                goto error_generic;
+        }
+        else if (configLineStartsWith(lineBuffer, "crewMember:"))
+        {
+            if (!configCheckIntegrityCrewMember(lineBuffer, &lineNumber, fptr))
+                goto error_generic;
+        }
+        else
+            goto error_unexpected_character;
+    }
+
+    return 0;
+
+error_opening_file:
+    return -1;
 error_unexpected_character:
     displayError("Unexpected char sequence");
-    printf("%s", fileContent);
+    printf("%s\n", lineBuffer);
 error_generic:
     printf("Error at line %zu (probably)\n", lineNumber);
-    printf("Ignoring the configuration file, continuing.\n");
     return -2;
 }
 
