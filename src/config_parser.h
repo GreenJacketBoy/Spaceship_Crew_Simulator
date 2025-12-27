@@ -9,6 +9,7 @@
 #include "Model/type_definitions.h"
 
 int configCheckIntegrity();
+int configCheckIntegrityAttributesAreTheCorrectType(char *configFilePath);
 int configCheckIntegrityAllFieldsPresentForAllObjects(char *configFilePath);
 bool configLineStartsWith(char *cptr, char *stringToMatch);
 bool isRestOfTheLineEmpty(char *cptr);

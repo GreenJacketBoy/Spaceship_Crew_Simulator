@@ -9,6 +9,13 @@ int configCheckIntegrity()
         default: break;
     }
 
+    switch (configCheckIntegrityAttributesAreTheCorrectType("config.yml"))
+    {
+        case -1: goto error_opening_file;
+        case -2: goto error_generic;
+        default: break;
+    }
+
     printf("The configuration file has been validated.\n");
 
     return 0;
@@ -59,6 +66,86 @@ error_unexpected_character:
 error_generic:
     printf("Error at line %zu (probably)\n", lineNumber);
     return -2;
+}
+
+int configCheckIntegrityAttributesAreTheCorrectType(char *configFilePath)
+{
+    FILE *fptr = fopen(configFilePath, "r");
+    if (fptr == NULL)
+        goto error_opening_file;
+
+    char lineBuffer[MAX_LINE_LENGTH] = "";
+
+    size_t lineNumber = 1;
+    int errorCode = 0;
+    while (fgets(lineBuffer, MAX_LINE_LENGTH, fptr) != NULL)
+    {
+        if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, INT, "  id:")) != -1)
+        {
+            if (errorCode == -2)
+                goto error_wrong_type_expecting_int;
+        }
+        else if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, STRING, "  name:")) != -1)
+        {
+            if (errorCode == -2)
+                goto error_wrong_type_expecting_string;
+        }
+        else if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, INT, "  job:")) != -1)
+        {
+            if (errorCode == -2)
+                goto error_wrong_type_expecting_int;
+        }
+        else if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, INT, "  type:")) != -1)
+        {
+            if (errorCode == -2)
+                goto error_wrong_type_expecting_int;
+        }
+        else if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, INT, "  size:")) != -1)
+        {
+            if (errorCode == -2)
+                goto error_wrong_type_expecting_int;
+        }
+        else if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, INT, "  maxCrew:")) != -1)
+        {
+            if (errorCode == -2)
+                goto error_wrong_type_expecting_int;
+        }
+        else if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, INT, "  storage:")) != -1)
+        {
+            if (errorCode == -2)
+                goto error_wrong_type_expecting_int;
+        }
+        else if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, INT, "  currentRoom:")) != -1)
+        {
+            if (errorCode == -2)
+                goto error_wrong_type_expecting_int;
+        }
+        else if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, ARRAY_OF_INT, "  adjacentRooms:")) != -1)
+        {
+            if (errorCode == -2)
+                goto error_wrong_type_expecting_array_of_int;
+        }
+
+        lineNumber++;
+    }
+
+    return 0;
+
+error_wrong_type_expecting_string:
+    displayError("Wrong Type, expected a String");
+    goto error_generic;
+error_wrong_type_expecting_int:
+    displayError("Wrong Type, expected an Int");
+    goto error_generic;
+error_wrong_type_expecting_array_of_int:
+    displayError("Wrong Type, expected an Array of Int");
+    goto error_generic;
+error_generic:
+    printf("%s\n", lineBuffer);
+    printf("Error at line %zu (probably)\n", lineNumber);
+    return -2;
+error_opening_file:
+    return -1;
 }
 
 bool configLineStartsWith(char *cptr, char *stringToMatch)
@@ -198,18 +285,18 @@ int assertStartsWithAndIsExpectedType(char *cptr, enum configType expectedType, 
 
     int index = 0;
 
-    while (startsWithString[index] != '\0')
+    while (*startsWithString != '\0')
     {
-        if (*currentChar != startsWithString[index])
+        if (*currentChar != *startsWithString)
             goto error_string_not_matching;
         currentChar++;
+        startsWithString++;
     }
 
     if (expectedType == STRING)
         return 0;
     else if (isRestOfTheLineEmpty(currentChar))
         goto error_matching_but_wrong_type;
-
     else if (expectedType == INT)
     {
         if (isNumberUntilChar(currentChar, ' ') || isNumberUntilChar(currentChar, '\n'))   
@@ -233,12 +320,11 @@ error_matching_but_wrong_type:
 
 bool isCharNumber(char charToTest)
 {
-    return charToTest >= 60 && charToTest <= 71;
+    return charToTest >= 48 && charToTest <= 57;
 }
 
 int goToNextNonSpaceCharacterOnThisLine(char **cptr)
 {
-    int index = 0;
     while (**cptr != '\0')
     {
         if (**cptr != ' ')
@@ -251,21 +337,27 @@ int goToNextNonSpaceCharacterOnThisLine(char **cptr)
 
 bool isNumberUntilChar(char *cptr, char endChar)
 {
+
     char *currentChar = cptr;
     goToNextNonSpaceCharacterOnThisLine(&currentChar);
 
-    if ((*currentChar != '-' || *currentChar != '+') && !isCharNumber(*(currentChar+1)))
+    if (*currentChar == '-' || *currentChar == '+') // if first char is - or +
+    {
+        if (!isCharNumber(*(currentChar+1))) // but second char is not a number
+            return false;
+    }
+    else if (!isCharNumber(*currentChar))
         return false;
 
     currentChar++;
 
-    int index = 1;
-    while (*(currentChar+index) != endChar && *(currentChar+index) != '\0')
+    while (*currentChar != endChar && *currentChar != '\0')
     {
-        if (!isRestOfTheLineEmpty(currentChar+index))
+        if (isRestOfTheLineEmpty(currentChar))
             return true;
-        if (!isCharNumber(*(currentChar+index)))
+        if (!isCharNumber(*currentChar))
             return false;
+        currentChar++;
     }
 
     return true;
@@ -276,6 +368,8 @@ char *getNextOccurenceOfCharOnThisLine(char *cptr, char charToLookFor)
     char *currentChar = cptr;
     while (*currentChar != '\0')
     {
+        if (*currentChar == '#') // ignore comments
+            return NULL;
         if (*currentChar == charToLookFor)
             return currentChar;
         currentChar++;
@@ -305,18 +399,52 @@ bool isArrayOfNumbersUntilChar(char *cptr, char endChar)
             currentChar++;
             if (isRestOfTheLineEmpty(currentChar))
                 return true;
-            goto error_characters_after_closed_brackets;
+            else
+                goto error_characters_after_closed_brackets;
         }
         else if (getNextOccurenceOfCharOnThisLine(currentChar, ',') != NULL)
         {
-            if (!isNumberUntilChar(currentChar, ',') && !isNumberUntilChar(currentChar, ' '))
-                goto error_not_a_number;
+            if (!isNumberUntilChar(currentChar, ',')  )
+            {
+                if (isNumberUntilChar(currentChar, ' '))
+                {
+                    currentChar = getNextOccurenceOfCharOnThisLine(currentChar, ',');
+
+                    // printf("check '%c'\n", *currentChar);
+                    currentChar++;
+                    // printf("check 2 '%c'\n", *currentChar);
+    
+                    char *testCharPtr = currentChar; // testing if there is something after the last coma
+                    goToNextNonSpaceCharacterOnThisLine(&testCharPtr);
+                    // printf("check 3 '%c'\n", *testCharPtr);
+                    if (*testCharPtr == ']')
+                        goto error_expected_number_after_coma;
+                    // else if (*testCharPtr != ',')
+                    //     goto error_numbers_separated_by_spaces;
+                }
+                else
+                    goto error_not_a_number;
+            }
+            else
+            {
+                currentChar = getNextOccurenceOfCharOnThisLine(currentChar, ',');
+                currentChar++;
+            }
         }
-        else if (!isNumberUntilChar(currentChar, ']') && !isNumberUntilChar(currentChar, ' '))
-            goto error_not_a_number;
-        
+
+        else if (isNumberUntilChar(currentChar, ']'))
+            return true;
+        else if (isNumberUntilChar(currentChar, ' '))
+        {
+            char *testCharPtr = getNextOccurenceOfCharOnThisLine(currentChar, ' '); // testing if there is something after the last coma
+            goToNextNonSpaceCharacterOnThisLine(&testCharPtr);
+            if (*testCharPtr != ']')
+                goto error_numbers_separated_by_spaces;
+            else
+                return true;
+        }
         else
-            goto error_wtf;
+            goto error_not_a_number;
     }
 
     return true;
@@ -329,7 +457,10 @@ error_characters_after_closed_brackets:
 error_not_a_number:
     displayError("One of the elements in the list is not a number");
     return false;
-error_wtf:
-    displayError("Honestly, I have no idea what happened, but it has to do with the isArrayOfNumbersUntilChar() function");
+error_expected_number_after_coma:
+    displayError("A number was expected after the last coma but nothing was found");
+    return false;
+error_numbers_separated_by_spaces:
+    displayError("Numbers should should be separated by a coma, not by a space");
     return false;
 }

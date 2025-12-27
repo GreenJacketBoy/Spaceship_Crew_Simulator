@@ -17,4 +17,4 @@ room:
   size: 25 # Int
   maxCrew: 8 # Int
   storage: 8 # Int
-  adjacentRooms: [] # Int[]
+  adjacentRooms: [+1,  -7   ,+8 ] # Int[]
