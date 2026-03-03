@@ -2,14 +2,21 @@
 
 int configCheckIntegrity()
 {
-    switch (configCheckIntegrityAllFieldsPresentForAllObjects("config.yml"))
+    switch (configCheckIntegrityAllFieldsPresentForAllObjects(CONFIG_FILE_NAME))
     {
         case -1: goto error_opening_file;
         case -2: goto error_generic;
         default: break;
     }
 
-    switch (configCheckIntegrityAttributesAreTheCorrectType("config.yml"))
+    switch (configCheckIntegrityAttributesAreTheCorrectType(CONFIG_FILE_NAME))
+    {
+        case -1: goto error_opening_file;
+        case -2: goto error_generic;
+        default: break;
+    }
+
+    switch (configCheckIntegrityNoDuplicateIds(CONFIG_FILE_NAME))
     {
         case -1: goto error_opening_file;
         case -2: goto error_generic;
@@ -145,6 +152,165 @@ error_generic:
     printf("Error at line %zu (probably)\n", lineNumber);
     return -2;
 error_opening_file:
+    return -1;
+}
+
+int configCheckIntegrityNoDuplicateIds(char *configFilePath)
+{
+    enum currentlyChecking 
+    {
+        NOTHING,
+        ROOM,
+        CREWMEMBER,
+    };
+
+    enum currentlyChecking checking = NOTHING;
+    size_t roomCount = 0, crewCount = 0, roomIndex = 0, crewIndex = 0;
+
+    char lineBuffer[MAX_LINE_LENGTH] = "";
+    size_t lineNumber = 1;
+    int errorCode = 0;
+
+    if (countRoomsAndCrew(&roomCount, &crewCount, configFilePath) != 0)
+        goto error_opening_file;
+
+
+    size_t *roomIds = malloc(sizeof(size_t) * roomCount);
+    size_t *crewIds = malloc(sizeof(size_t) * crewCount);
+    // These 2 arrays store the line number (config file) of each id, so that 
+    // if the same id is found twice, the error message can tell which lines to change
+    size_t *roomIdsLineNumbers = malloc(sizeof(size_t) * roomCount);
+    size_t *crewIdsLineNumbers = malloc(sizeof(size_t) * crewCount);
+
+    FILE *fptr = fopen(configFilePath, "r");
+    if (fptr == NULL)
+        goto error_opening_file;
+
+    while (fgets(lineBuffer, MAX_LINE_LENGTH, fptr) != NULL)
+    {
+        if (configLineStartsWith(lineBuffer, "room:")) checking = ROOM;
+        else if (configLineStartsWith(lineBuffer, "crewMember:")) checking = CREWMEMBER;
+        else if (configLineStartsWith(lineBuffer, "  id:"))
+        {
+            if (checking == ROOM)
+            {
+                roomIds[roomIndex] = configGetIntAfterString(lineBuffer, "  id:");
+                roomIdsLineNumbers[roomIndex] = lineNumber;
+                roomIndex++;
+            }
+            else if (checking == CREWMEMBER)
+            {
+                crewIds[crewIndex] = configGetIntAfterString(lineBuffer, "  id:");
+                crewIdsLineNumbers[crewIndex] = lineNumber;
+                crewIndex++;
+            }
+        }
+        lineNumber++;
+    }
+
+    if (hasDuplicates(roomIds, roomIdsLineNumbers, roomCount) || hasDuplicates(crewIds, crewIdsLineNumbers, crewCount))
+        goto error_generic;
+
+    goto free_and_return;
+
+error_generic:
+    errorCode = -2;
+    goto free_and_return;
+error_opening_file:
+    errorCode = -1;
+    goto free_and_return;
+
+free_and_return:
+
+    free(roomIds);
+    roomIds = NULL;
+    free(crewIds);
+    crewIds = NULL;
+    free(roomIdsLineNumbers);
+    roomIdsLineNumbers = NULL;
+    free(crewIdsLineNumbers);
+    crewIdsLineNumbers = NULL;
+
+    return errorCode;
+}
+
+    
+int countRoomsAndCrew(size_t *roomCount, size_t *crewCount, char *configFilePath)
+{
+    FILE *fptr = fopen(configFilePath, "r");
+    if (fptr == NULL)
+        goto error_opening_file;
+
+    char lineBuffer[MAX_LINE_LENGTH] = "";
+
+    while (fgets(lineBuffer, MAX_LINE_LENGTH, fptr) != NULL)
+    {
+        if (configLineStartsWith(lineBuffer, "room:"))
+            (*roomCount)++;
+        else if (configLineStartsWith(lineBuffer, "crewMember:"))
+            (*crewCount)++;
+    }
+
+    return 0;
+
+error_opening_file:
+    return -1;
+}
+
+bool hasDuplicates(size_t *arrayToCheck, size_t *lineNumbersArray, size_t size)
+{
+    size_t firstDuplicateIndex, secondDuplicateIndex;
+
+    for (size_t i = 0; i < size; i++)
+    {
+        int instancesFound = 0;
+        for (size_t j = 0; j < size; j++)
+        {
+            if (arrayToCheck[i] == arrayToCheck[j])
+            {
+                instancesFound++;
+                if (instancesFound > 1)
+                {
+                    firstDuplicateIndex = lineNumbersArray[i];
+                    secondDuplicateIndex = lineNumbersArray[j];
+                    goto duplicate_found;
+                }
+            }
+        }
+    }
+    return false;
+duplicate_found:
+    printf("Error : non-distinct ids at line %zu and %zu\n", firstDuplicateIndex, secondDuplicateIndex);
+    return true;
+}
+
+size_t configGetIntAfterString(char *cptr, char *startsWithString)
+{
+    int index = 0;
+    char *numberCharPtr;
+
+    while (startsWithString[index] != '\0')
+    {
+        if (cptr[index] != startsWithString[index])
+            goto error_wrong_starts_with_string;        
+        index++;
+    }
+
+    numberCharPtr = cptr + index;
+
+    char *currentChar = numberCharPtr;
+    while (*currentChar != '\0')
+    {
+        if (*currentChar == '#')
+            *currentChar = '\0';
+        else
+            currentChar++;
+    }
+
+    char *endptr;
+    return strtoul(numberCharPtr, &endptr, 0);
+
+error_wrong_starts_with_string:
     return -1;
 }
 
