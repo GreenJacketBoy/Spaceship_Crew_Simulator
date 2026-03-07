@@ -1,4 +1,5 @@
 # Default config
+# Helpful messages are printed if there are any errors
 
 crewMember:
   id: 1 # Int
@@ -17,4 +18,27 @@ room:
   size: 25 # Int
   maxCrew: 8 # Int
   storage: 8 # Int
-  adjacentRooms: [+1,  -7   ,+8 ] # Int[]
+  # The Ids of the adjacent rooms. They are separated by a coma and as little
+  # or as many space as you want. Start with '[' and ends with ']'
+  adjacentRooms: [3,  2  ] # Int[]
+
+
+room:
+  id: 2 # Int
+  # String
+  name: Medbay 1
+  type: 2 # Int
+  size: 25 # Int
+  maxCrew: 8 # Int
+  storage: 8 # Int
+  adjacentRooms: [] # Int[]
+
+room:
+  id: 3 # Int
+  # String
+  name: Medbay 1
+  type: 2 # Int
+  size: 25 # Int
+  maxCrew: 8 # Int
+  storage: 8 # Int
+  adjacentRooms: [] # Int[]

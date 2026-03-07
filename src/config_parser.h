@@ -10,6 +10,13 @@
 #include "core.h"
 #include "Model/type_definitions.h"
 
+enum currentlyChecking 
+{
+    CHECKING_NOTHING,
+    CHECKING_ROOM,
+    CHECKING_CREWMEMBER,
+};
+
 int configCheckIntegrity();
 int configCheckIntegrityAttributesAreTheCorrectType(char *configFilePath);
 int configCheckIntegrityAllFieldsPresentForAllObjects(char *configFilePath);
@@ -23,9 +30,52 @@ int goToNextNonSpaceCharacterOnThisLine(char **cptr);
 bool isNumberUntilChar(char *cptr, char endChar);
 char *getNextOccurenceOfCharOnThisLine(char *cptr, char charToLookFor);
 bool isArrayOfNumbersUntilChar(char *cptr, char endChar);
-int configCheckIntegrityNoDuplicateIds(char *configFilePath);
+int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount, char *configFilePath);
 int countRoomsAndCrew(size_t *roomCount, size_t *crewCount, char *configFilePath);
 bool hasDuplicates(size_t *arrayToCheck, size_t *lineNumbersArray, size_t size);
 size_t configGetIntAfterString(char *cptr, char *startsWithString);
+bool isRoomInArray(room **roomArray, size_t roomArraySize, size_t roomIdToLookFor);
+room *configGetRoomInArray(room **roomsArray, size_t roomsArraySize, size_t roomIdToLookFor);
+int initAndCheckAdjacentRooms(room **roomArray, size_t roomArraySize, room *roomBeingChecked, char *charPtr, size_t lineNumber);
+int freeAll(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount);
+int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath);
+
+/** room_or_crewMember sould be either room or crewmember, nothing else */
+#define hasDuplicatesIds(room_or_crewMember)\
+bool room_or_crewMember##HasDuplicatesIds(room_or_crewMember **arrayToCheck, size_t *lineNumbersArray, size_t size)\
+{                                                                                                                 \
+    size_t firstDuplicateIndex, secondDuplicateIndex;                                                             \
+    for (size_t i = 0; i < size; i++)                                                                             \
+    {                                                                                                             \
+        int instancesFound = 0;                                                                                   \
+        for (size_t j = 0; j < size; j++)                                                                         \
+        {                                                                                                         \
+            if (arrayToCheck[i]->id == arrayToCheck[j]->id)                                                         \
+            {                                                                                                     \
+                instancesFound++;                                                                                 \
+                if (instancesFound > 1)                                                                           \
+                {                                                                                                 \
+                    firstDuplicateIndex = lineNumbersArray[i];                                                    \
+                    secondDuplicateIndex = lineNumbersArray[j];                                                   \
+                    goto duplicate_found;                                                                         \
+                }                                                                                                 \
+            }                                                                                                     \
+        }                                                                                                         \
+    }                                                                                                             \
+    return false;                                                                                                 \
+duplicate_found:                                                                                                  \
+    printf("Error : non-distinct " #room_or_crewMember " ids at line %zu and %zu\n", firstDuplicateIndex, secondDuplicateIndex);\
+    return true;                                                                                                  \
+}                                                                                                                 \
+
+bool roomHasDuplicatesIds(room **arrayToCheck, size_t *lineNumbersArray, size_t size);
+bool crewMemberHasDuplicatesIds(crewMember **arrayToCheck, size_t *lineNumbersArray, size_t size);
+
+#define log_idNotFound_then_Jump(id, lineNumber) \
+{                                                                              \
+    printf("Error : non-existing id (%zu) used at line %zu\n", id, lineNumber);\
+    printf("%s\n", lineBuffer);                                                \
+    goto error_generic;                                                        \
+}                                                                              \
 
 #endif // !CONFIG_PARSER_H

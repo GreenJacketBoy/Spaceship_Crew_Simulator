@@ -16,7 +16,18 @@ int configCheckIntegrity()
         default: break;
     }
 
-    switch (configCheckIntegrityNoDuplicateIds(CONFIG_FILE_NAME))
+    crewMember **crewMembers = NULL;
+    room **rooms = NULL;
+    size_t crewCount = 0, roomCount = 0;
+
+    switch (configCheckIntegrityNoDuplicateIds(&crewMembers, &crewCount, &rooms, &roomCount, CONFIG_FILE_NAME))
+    {
+        case -1: goto error_opening_file;
+        case -2: goto error_generic;
+        default: break;
+    }
+
+    switch (configCheckIntegrityReferencedIdsExist(crewMembers, crewCount, rooms, roomCount, CONFIG_FILE_NAME))
     {
         case -1: goto error_opening_file;
         case -2: goto error_generic;
@@ -155,32 +166,25 @@ error_opening_file:
     return -1;
 }
 
-int configCheckIntegrityNoDuplicateIds(char *configFilePath)
+int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount, char *configFilePath)
 {
-    enum currentlyChecking 
-    {
-        NOTHING,
-        ROOM,
-        CREWMEMBER,
-    };
-
-    enum currentlyChecking checking = NOTHING;
-    size_t roomCount = 0, crewCount = 0, roomIndex = 0, crewIndex = 0;
+    enum currentlyChecking checking = CHECKING_NOTHING;
+    size_t roomIndex = 0, crewIndex = 0;
 
     char lineBuffer[MAX_LINE_LENGTH] = "";
     size_t lineNumber = 1;
     int errorCode = 0;
 
-    if (countRoomsAndCrew(&roomCount, &crewCount, configFilePath) != 0)
+    if (countRoomsAndCrew(roomCount, crewCount, configFilePath) != 0)
         goto error_opening_file;
 
-
-    size_t *roomIds = malloc(sizeof(size_t) * roomCount);
-    size_t *crewIds = malloc(sizeof(size_t) * crewCount);
+    *rooms = malloc(sizeof(room) * *roomCount);
+    *crewMembers = malloc(sizeof(crewMember) * *crewCount);
     // These 2 arrays store the line number (config file) of each id, so that 
     // if the same id is found twice, the error message can tell which lines to change
-    size_t *roomIdsLineNumbers = malloc(sizeof(size_t) * roomCount);
-    size_t *crewIdsLineNumbers = malloc(sizeof(size_t) * crewCount);
+    size_t *roomIdsLineNumbers = malloc(sizeof(size_t) * *roomCount);
+    size_t *crewIdsLineNumbers = malloc(sizeof(size_t) * *crewCount);
+
 
     FILE *fptr = fopen(configFilePath, "r");
     if (fptr == NULL)
@@ -188,19 +192,22 @@ int configCheckIntegrityNoDuplicateIds(char *configFilePath)
 
     while (fgets(lineBuffer, MAX_LINE_LENGTH, fptr) != NULL)
     {
-        if (configLineStartsWith(lineBuffer, "room:")) checking = ROOM;
-        else if (configLineStartsWith(lineBuffer, "crewMember:")) checking = CREWMEMBER;
+        if (configLineStartsWith(lineBuffer, "room:")) checking = CHECKING_ROOM;
+        else if (configLineStartsWith(lineBuffer, "crewMember:")) checking = CHECKING_CREWMEMBER;
         else if (configLineStartsWith(lineBuffer, "  id:"))
         {
-            if (checking == ROOM)
+            if (checking == CHECKING_ROOM)
             {
-                roomIds[roomIndex] = configGetIntAfterString(lineBuffer, "  id:");
+                (*rooms)[roomIndex] = malloc(sizeof(room));
+                (*rooms)[roomIndex]->id = configGetIntAfterString(lineBuffer, "  id:");
+                (*rooms)[roomIndex]->adjacentRoomsArray = NULL; // in case of a later free
                 roomIdsLineNumbers[roomIndex] = lineNumber;
                 roomIndex++;
             }
-            else if (checking == CREWMEMBER)
+            else if (checking == CHECKING_CREWMEMBER)
             {
-                crewIds[crewIndex] = configGetIntAfterString(lineBuffer, "  id:");
+                (*crewMembers)[crewIndex] = malloc(sizeof(crewMember));
+                (*crewMembers)[crewIndex]->id = configGetIntAfterString(lineBuffer, "  id:");
                 crewIdsLineNumbers[crewIndex] = lineNumber;
                 crewIndex++;
             }
@@ -208,24 +215,18 @@ int configCheckIntegrityNoDuplicateIds(char *configFilePath)
         lineNumber++;
     }
 
-    if (hasDuplicates(roomIds, roomIdsLineNumbers, roomCount) || hasDuplicates(crewIds, crewIdsLineNumbers, crewCount))
+    if (roomHasDuplicatesIds(*rooms, roomIdsLineNumbers, *roomCount) || crewMemberHasDuplicatesIds(*crewMembers, crewIdsLineNumbers, *crewCount))
         goto error_generic;
 
-    goto free_and_return;
+    goto free_line_numbers_and_return;
 
+error_opening_file:
+    return -1;
 error_generic:
     errorCode = -2;
-    goto free_and_return;
-error_opening_file:
-    errorCode = -1;
-    goto free_and_return;
+    freeAll(*crewMembers, *crewCount, *rooms, *roomCount);
 
-free_and_return:
-
-    free(roomIds);
-    roomIds = NULL;
-    free(crewIds);
-    crewIds = NULL;
+free_line_numbers_and_return:
     free(roomIdsLineNumbers);
     roomIdsLineNumbers = NULL;
     free(crewIdsLineNumbers);
@@ -234,7 +235,168 @@ free_and_return:
     return errorCode;
 }
 
+int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath)
+{
+    enum currentlyChecking checking = CHECKING_NOTHING;
+
+
+    char lineBuffer[MAX_LINE_LENGTH] = "";
+    size_t id = 0;
+    size_t roomIndex = -1;
+    size_t lineNumber = 1;
+    int errorCode = 0;
+
+    FILE *fptr = fopen(configFilePath, "r");
+    if (fptr == NULL)
+        goto error_opening_file;
+
+    while (fgets(lineBuffer, MAX_LINE_LENGTH, fptr) != NULL)
+    {
+        if (configLineStartsWith(lineBuffer, "room:")) {checking = CHECKING_ROOM; roomIndex++;}
+        else if (configLineStartsWith(lineBuffer, "crewMember:")) checking = CHECKING_CREWMEMBER;
+        else if (checking == CHECKING_CREWMEMBER)
+        {
+            if (configLineStartsWith(lineBuffer, "  currentRoom:") && !isRoomInArray(rooms, roomCount, id = configGetIntAfterString(lineBuffer, "  currentRoom:")))
+            {
+                printf("Error : non-existing room id (%zu) used at line %zu\n%s\n", id, lineNumber, lineBuffer);
+                goto error_generic;
+            }
+            else if (configLineStartsWith(lineBuffer, "  job:") && (id = configGetIntAfterString(lineBuffer, "  job:")) > AMOUNT_OF_DIFFERENT_JOBS)
+            {
+                printf("Error : non-existing job index (%zu) used at line %zu\nJob index cannot exceed the amount of different jobs (%d)\n%s\n", id, lineNumber, AMOUNT_OF_DIFFERENT_JOBS, lineBuffer);
+                goto error_generic;
+            }
+        }
+        else if (checking == CHECKING_ROOM)
+        {
+            if (configLineStartsWith(lineBuffer, "  type:") && (id = configGetIntAfterString(lineBuffer, "  type:")) > AMOUNT_OF_DIFFERENT_ROOM_TYPES)
+            {
+                printf("Error : non-existing room type index (%zu) used at line %zu\nRoom type index cannot exceed the amount of different room types (%d)\n%s\n", id, lineNumber, AMOUNT_OF_DIFFERENT_JOBS, lineBuffer);
+                goto error_generic;
+            }
+            else if (configLineStartsWith(lineBuffer, "  adjacentRooms:"))
+            {
+                char *charPtr = getNextOccurenceOfCharOnThisLine(lineBuffer, '[') + 1;
+                if (initAndCheckAdjacentRooms(rooms, roomCount, rooms[roomIndex], charPtr, lineNumber) != 0)
+                    goto error_generic;
+            }
+        }
+        lineNumber++;
+    }
+
+    return errorCode;
+
+error_generic:
+    errorCode = -2;
+    goto free_all_and_return;
+error_opening_file:
+    errorCode = -1;
+    goto free_all_and_return;
+
+free_all_and_return:
+    freeAll(crewMembers, crewCount, rooms, roomCount);
+    return errorCode;
+}
+
+/** checks if all the ids in the array as string of charPtr 
+ * (looking like that : [+1,  -7   ,+8 ]) exist in roomArray
+ */
+int initAndCheckAdjacentRooms(room **roomArray, size_t roomArraySize, room *roomBeingChecked, char *charPtr, size_t lineNumber)
+{
+    char *lineBuffer = charPtr;
+    char *separatorChar = charPtr;
+    size_t adjacentRoomId = 0;
+    size_t adjacentRoomsSize = 0;
+    room **adjacentRooms = NULL;
     
+    goToNextNonSpaceCharacterOnThisLine(&charPtr);
+    if (*charPtr == ']')
+        goto empty_list;
+
+    adjacentRoomsSize = 1;
+    while ((charPtr = getNextOccurenceOfCharOnThisLine(charPtr+1, ',')) != NULL)
+        adjacentRoomsSize++;
+
+    adjacentRooms = malloc(sizeof(room *) * adjacentRoomsSize);
+    charPtr = lineBuffer;
+
+    for (size_t i = 0; i < adjacentRoomsSize; i++)
+    {
+        if ((separatorChar = getNextOccurenceOfCharOnThisLine(separatorChar, ',')) != NULL)
+            *separatorChar = '\0';
+
+        room *adjacentRoom = configGetRoomInArray(roomArray, roomArraySize, (adjacentRoomId = configGetIntAfterString(charPtr, "")));
+        if (adjacentRoom == NULL)
+            goto id_does_not_exist;
+        if (adjacentRoom->id == roomBeingChecked->id)
+            goto room_adjacent_to_itself;
+
+        adjacentRooms[i] = adjacentRoom;
+
+        for (size_t j = 0; j < i; j++)
+        {
+            if (adjacentRooms[i]->id == adjacentRooms[j]->id)
+                goto duplicate_id;
+        }
+
+        separatorChar++;
+        charPtr = separatorChar;
+    }
+
+empty_list:
+    roomBeingChecked->adjacentRoomsArraySize = adjacentRoomsSize;
+    roomBeingChecked->adjacentRoomsArray = adjacentRooms;
+    return 0;
+id_does_not_exist:
+    printf("Error : non-existing room id (%zu) used at line %zu\n", adjacentRoomId, lineNumber);
+    return -1;
+duplicate_id:
+    printf("Error : duplicate room id (%zu) found at line %zu\n", adjacentRoomId, lineNumber);
+    return -2;
+room_adjacent_to_itself:
+    printf("Error : A room cannot be adjacent to itself (id: %zu, line %zu)\n", adjacentRoomId, lineNumber);
+    return -3;
+}
+
+int freeAll(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount)
+{
+    for (size_t i = 0; i < crewCount; i++)
+        free(crewMembers[i]);
+
+    free(crewMembers);
+    crewMembers = NULL;
+
+    for (size_t i = 0; i < roomCount; i++)
+    {
+        free(rooms[i]->adjacentRoomsArray);
+        free(rooms[i]);
+    }
+    free(rooms);
+    rooms = NULL;
+    return 0;
+}
+
+
+room *configGetRoomInArray(room **roomsArray, size_t roomsArraySize, size_t roomIdToLookFor)
+{
+    for (size_t i = 0; i < roomsArraySize; i++)
+    {
+        if (roomsArray[i]->id == roomIdToLookFor)
+            return roomsArray[i];
+    }
+
+    return NULL;
+}
+
+bool isRoomInArray(room **roomArray, size_t roomArraySize, size_t roomIdToLookFor)
+{
+    for (size_t i = 0; i < roomArraySize; i++)
+        if (roomArray[i]->id == roomIdToLookFor)
+            return true;
+
+    return false;
+}
+
 int countRoomsAndCrew(size_t *roomCount, size_t *crewCount, char *configFilePath)
 {
     FILE *fptr = fopen(configFilePath, "r");
@@ -257,32 +419,9 @@ error_opening_file:
     return -1;
 }
 
-bool hasDuplicates(size_t *arrayToCheck, size_t *lineNumbersArray, size_t size)
-{
-    size_t firstDuplicateIndex, secondDuplicateIndex;
+hasDuplicatesIds(room);
 
-    for (size_t i = 0; i < size; i++)
-    {
-        int instancesFound = 0;
-        for (size_t j = 0; j < size; j++)
-        {
-            if (arrayToCheck[i] == arrayToCheck[j])
-            {
-                instancesFound++;
-                if (instancesFound > 1)
-                {
-                    firstDuplicateIndex = lineNumbersArray[i];
-                    secondDuplicateIndex = lineNumbersArray[j];
-                    goto duplicate_found;
-                }
-            }
-        }
-    }
-    return false;
-duplicate_found:
-    printf("Error : non-distinct ids at line %zu and %zu\n", firstDuplicateIndex, secondDuplicateIndex);
-    return true;
-}
+hasDuplicatesIds(crewMember);
 
 size_t configGetIntAfterString(char *cptr, char *startsWithString)
 {
@@ -311,6 +450,7 @@ size_t configGetIntAfterString(char *cptr, char *startsWithString)
     return strtoul(numberCharPtr, &endptr, 0);
 
 error_wrong_starts_with_string:
+    displayError("Error triggered in the function configGetIntAfterString() of config_parser.c !");
     return -1;
 }
 
