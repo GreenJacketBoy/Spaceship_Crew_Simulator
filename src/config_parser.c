@@ -322,7 +322,7 @@ int configSetAllRemainingFields(crewMember **crewMembers, size_t crewCount, room
         else if (checking == CHECKING_CREWMEMBER)
         {
             if (configLineStartsWith(lineBuffer, "  name:"))
-                strncpy(crewMembers[crewIndex]->name, configGetStringAfterString(lineBuffer, "  name"), CREW_MEMBER_NAME_MAX_LENGTH);
+                strncpy(crewMembers[crewIndex]->name, configGetStringAfterString(lineBuffer, "  name:"), CREW_MEMBER_NAME_MAX_LENGTH);
 
             else if (configLineStartsWith(lineBuffer, "  job:"))
                 crewMembers[crewIndex]->job = configGetIntAfterString(lineBuffer, "  job:") - 1;
@@ -334,7 +334,7 @@ int configSetAllRemainingFields(crewMember **crewMembers, size_t crewCount, room
         else if (checking == CHECKING_ROOM)
         {
             if (configLineStartsWith(lineBuffer, "  name:"))
-                strncpy(rooms[roomIndex]->name, configGetStringAfterString(lineBuffer, "  name"), ROOM_NAME_MAX_LENGTH);
+                strncpy(rooms[roomIndex]->name, configGetStringAfterString(lineBuffer, "  name:"), ROOM_NAME_MAX_LENGTH);
 
             else if (configLineStartsWith(lineBuffer, "  type:"))
                 rooms[roomIndex]->roomType = configGetIntAfterString(lineBuffer, "  type:") - 1;
@@ -376,7 +376,7 @@ char *configGetStringAfterString(char *lineBuffer, char *startsWithString)
     char *endChar = actualStringStart;
     while (*endChar != '\0')
     {
-        if (*endChar == '#')
+        if (*endChar == '#' || *endChar == '\n')
             *endChar = '\0';
         else
             endChar++;
