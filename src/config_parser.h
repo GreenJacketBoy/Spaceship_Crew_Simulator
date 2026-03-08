@@ -18,7 +18,7 @@ enum currentlyChecking
     CHECKING_CREWMEMBER,
 };
 
-int configCheckIntegrityAndFillParams(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount);
+int configCheckIntegrityAndFillParams(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount, size_t *currentBiggestRoomId, size_t *currentBiggestCrewMemberId);
 int configCheckIntegrityAttributesAreTheCorrectType(char *configFilePath);
 int configCheckIntegrityAllFieldsPresentForAllObjects(char *configFilePath);
 bool configLineStartsWith(char *cptr, char *stringToMatch);
@@ -31,7 +31,7 @@ int goToNextNonSpaceCharacterOnThisLine(char **cptr);
 bool isNumberUntilChar(char *cptr, char endChar);
 char *getNextOccurenceOfCharOnThisLine(char *cptr, char charToLookFor);
 bool isArrayOfNumbersUntilChar(char *cptr, char endChar);
-int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount, char *configFilePath);
+int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount, size_t *currentBiggestRoomId, size_t *currentBiggestCrewMemberId, char *configFilePath);
 int countRoomsAndCrew(size_t *roomCount, size_t *crewCount, char *configFilePath);
 bool hasDuplicates(size_t *arrayToCheck, size_t *lineNumbersArray, size_t size);
 size_t configGetIntAfterString(char *cptr, char *startsWithString);

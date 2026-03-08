@@ -1,6 +1,6 @@
 #include "config_parser.h"
 
-int configCheckIntegrityAndFillParams(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount)
+int configCheckIntegrityAndFillParams(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount, size_t *currentBiggestRoomId, size_t *currentBiggestCrewMemberId)
 {
     switch (configCheckIntegrityAllFieldsPresentForAllObjects(CONFIG_FILE_NAME))
     {
@@ -16,7 +16,7 @@ int configCheckIntegrityAndFillParams(crewMember ***crewMembers, size_t *crewCou
         default: break;
     }
 
-    switch (configCheckIntegrityNoDuplicateIds(crewMembers, crewCount, rooms, roomCount, CONFIG_FILE_NAME))
+    switch (configCheckIntegrityNoDuplicateIds(crewMembers, crewCount, rooms, roomCount, currentBiggestRoomId, currentBiggestCrewMemberId,CONFIG_FILE_NAME))
     {
         case -1: goto error_opening_file;
         case -2: goto error_generic;
@@ -168,7 +168,7 @@ error_opening_file:
     return -1;
 }
 
-int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount, char *configFilePath)
+int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount, size_t *currentBiggestRoomId, size_t *currentBiggestCrewMemberId, char *configFilePath)
 {
     enum currentlyChecking checking = CHECKING_NOTHING;
     size_t roomIndex = 0, crewIndex = 0;
@@ -204,6 +204,8 @@ int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCo
                 (*rooms)[roomIndex]->id = configGetIntAfterString(lineBuffer, "  id:");
                 (*rooms)[roomIndex]->adjacentRoomsArray = NULL; // in case of a later free
                 roomIdsLineNumbers[roomIndex] = lineNumber;
+                if ((*rooms)[roomIndex]->id > *currentBiggestRoomId)
+                    *currentBiggestRoomId = (*rooms)[roomIndex]->id;
                 roomIndex++;
             }
             else if (checking == CHECKING_CREWMEMBER)
@@ -211,6 +213,8 @@ int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCo
                 (*crewMembers)[crewIndex] = malloc(sizeof(crewMember));
                 (*crewMembers)[crewIndex]->id = configGetIntAfterString(lineBuffer, "  id:");
                 crewIdsLineNumbers[crewIndex] = lineNumber;
+                if ((*crewMembers)[crewIndex]->id > *currentBiggestCrewMemberId)
+                    (*currentBiggestCrewMemberId) = (*crewMembers)[crewIndex]->id;
                 crewIndex++;
             }
         }
