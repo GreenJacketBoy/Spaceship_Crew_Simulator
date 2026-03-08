@@ -2,7 +2,8 @@
 
 int main() 
 {
-    configCheckIntegrity();
+    // TODO: Fill with arguments
+    configCheckIntegrityAndFillParams();
     initCrew(4);
     initRoom(0);
     

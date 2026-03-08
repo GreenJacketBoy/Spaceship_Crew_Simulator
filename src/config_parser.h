@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include "core.h"
 #include "Model/type_definitions.h"
 
@@ -17,7 +18,7 @@ enum currentlyChecking
     CHECKING_CREWMEMBER,
 };
 
-int configCheckIntegrity();
+int configCheckIntegrityAndFillParams(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount);
 int configCheckIntegrityAttributesAreTheCorrectType(char *configFilePath);
 int configCheckIntegrityAllFieldsPresentForAllObjects(char *configFilePath);
 bool configLineStartsWith(char *cptr, char *stringToMatch);
@@ -39,6 +40,8 @@ room *configGetRoomInArray(room **roomsArray, size_t roomsArraySize, size_t room
 int initAndCheckAdjacentRooms(room **roomArray, size_t roomArraySize, room *roomBeingChecked, char *charPtr, size_t lineNumber);
 int freeAll(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount);
 int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath);
+char *configGetStringAfterString(char *lineBuffer, char *startsWithString);
+int configSetAllRemainingFields(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath);
 
 /** room_or_crewMember sould be either room or crewmember, nothing else */
 #define hasDuplicatesIds(room_or_crewMember)\
@@ -70,12 +73,5 @@ duplicate_found:                                                                
 
 bool roomHasDuplicatesIds(room **arrayToCheck, size_t *lineNumbersArray, size_t size);
 bool crewMemberHasDuplicatesIds(crewMember **arrayToCheck, size_t *lineNumbersArray, size_t size);
-
-#define log_idNotFound_then_Jump(id, lineNumber) \
-{                                                                              \
-    printf("Error : non-existing id (%zu) used at line %zu\n", id, lineNumber);\
-    printf("%s\n", lineBuffer);                                                \
-    goto error_generic;                                                        \
-}                                                                              \
 
 #endif // !CONFIG_PARSER_H

@@ -1,6 +1,6 @@
 #include "config_parser.h"
 
-int configCheckIntegrity()
+int configCheckIntegrityAndFillParams(crewMember ***crewMembers, size_t *crewCount, room ***rooms, size_t *roomCount)
 {
     switch (configCheckIntegrityAllFieldsPresentForAllObjects(CONFIG_FILE_NAME))
     {
@@ -16,21 +16,23 @@ int configCheckIntegrity()
         default: break;
     }
 
-    crewMember **crewMembers = NULL;
-    room **rooms = NULL;
-    size_t crewCount = 0, roomCount = 0;
-
-    switch (configCheckIntegrityNoDuplicateIds(&crewMembers, &crewCount, &rooms, &roomCount, CONFIG_FILE_NAME))
+    switch (configCheckIntegrityNoDuplicateIds(crewMembers, crewCount, rooms, roomCount, CONFIG_FILE_NAME))
     {
         case -1: goto error_opening_file;
         case -2: goto error_generic;
         default: break;
     }
 
-    switch (configCheckIntegrityReferencedIdsExist(crewMembers, crewCount, rooms, roomCount, CONFIG_FILE_NAME))
+    switch (configCheckIntegrityReferencedIdsExist(*crewMembers, *crewCount, *rooms, *roomCount, CONFIG_FILE_NAME))
     {
         case -1: goto error_opening_file;
         case -2: goto error_generic;
+        default: break;
+    }
+
+    switch (configSetAllRemainingFields(*crewMembers, *crewCount, *rooms, *roomCount, CONFIG_FILE_NAME))
+    {
+        case -1: goto error_opening_file;
         default: break;
     }
 
@@ -296,6 +298,95 @@ error_opening_file:
 free_all_and_return:
     freeAll(crewMembers, crewCount, rooms, roomCount);
     return errorCode;
+}
+
+int configSetAllRemainingFields(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath)
+{
+    enum currentlyChecking checking = CHECKING_NOTHING;
+
+    char lineBuffer[MAX_LINE_LENGTH] = "";
+    size_t id = 0;
+    size_t roomIndex = -1;
+    size_t crewIndex = -1;
+    size_t lineNumber = 1;
+    int errorCode = 0;
+
+    FILE *fptr = fopen(configFilePath, "r");
+    if (fptr == NULL)
+        goto error_opening_file;
+
+    while (fgets(lineBuffer, MAX_LINE_LENGTH, fptr) != NULL)
+    {
+        if (configLineStartsWith(lineBuffer, "room:")) {checking = CHECKING_ROOM; roomIndex++;}
+        else if (configLineStartsWith(lineBuffer, "crewMember:")) {checking = CHECKING_CREWMEMBER; crewIndex++;}
+        else if (checking == CHECKING_CREWMEMBER)
+        {
+            if (configLineStartsWith(lineBuffer, "  name:"))
+                strncpy(crewMembers[crewIndex]->name, configGetStringAfterString(lineBuffer, "  name"), CREW_MEMBER_NAME_MAX_LENGTH);
+
+            else if (configLineStartsWith(lineBuffer, "  job:"))
+                crewMembers[crewIndex]->job = configGetIntAfterString(lineBuffer, "  job:") - 1;
+
+            // TODO: refactor currentRooms to be in crewMember struct
+            // else if (configLineStartsWith(lineBuffer, "  currentRoom:"))
+            //     crewMembers[crewIndex]-> = configGetIntAfterString(lineBuffer, "  currentRoom:");
+        }
+        else if (checking == CHECKING_ROOM)
+        {
+            if (configLineStartsWith(lineBuffer, "  name:"))
+                strncpy(rooms[roomIndex]->name, configGetStringAfterString(lineBuffer, "  name"), ROOM_NAME_MAX_LENGTH);
+
+            else if (configLineStartsWith(lineBuffer, "  type:"))
+                rooms[roomIndex]->roomType = configGetIntAfterString(lineBuffer, "  type:") - 1;
+
+            else if (configLineStartsWith(lineBuffer, "  size:"))
+                rooms[roomIndex]->size = configGetIntAfterString(lineBuffer, "  size:");
+
+            else if (configLineStartsWith(lineBuffer, "  maxCrew:"))
+                rooms[roomIndex]->crewCapacity = configGetIntAfterString(lineBuffer, "  maxCrew:");
+
+            else if (configLineStartsWith(lineBuffer, "  storage:"))
+                rooms[roomIndex]->storageCapacity = configGetIntAfterString(lineBuffer, "  storage:");
+        }
+        lineNumber++;
+    }
+
+    return 0;
+
+error_opening_file:
+    freeAll(crewMembers, crewCount, rooms, roomCount);
+    return -1;
+}
+
+char *configGetStringAfterString(char *lineBuffer, char *startsWithString)
+{
+    int index = 0;
+    char *actualStringStart;
+
+    while (startsWithString[index] != '\0')
+    {
+        if (lineBuffer[index] != startsWithString[index])
+            goto error_wrong_starts_with_string;        
+        index++;
+    }
+
+    actualStringStart = lineBuffer + index;
+    goToNextNonSpaceCharacterOnThisLine(&actualStringStart);
+
+    char *endChar = actualStringStart;
+    while (*endChar != '\0')
+    {
+        if (*endChar == '#')
+            *endChar = '\0';
+        else
+            endChar++;
+    }
+
+    return actualStringStart;
+
+error_wrong_starts_with_string:
+    displayError("Error triggered in the function configGetIntAfterString() of config_parser.c !");
+    return NULL;
 }
 
 /** checks if all the ids in the array as string of charPtr 
