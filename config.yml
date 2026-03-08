@@ -13,8 +13,8 @@ crewMember:
 room:
   id: 1 # Int
   # String
-  name: Medbay 1
-  type: 2 # Int
+  name: Corridor Medbay to Bridge
+  type: 1 # Int
   size: 25 # Int
   maxCrew: 8 # Int
   storage: 8 # Int
@@ -28,17 +28,17 @@ room:
   # String
   name: Medbay 1
   type: 2 # Int
-  size: 25 # Int
-  maxCrew: 8 # Int
-  storage: 8 # Int
+  size: 35 # Int
+  maxCrew: 20 # Int
+  storage: 30 # Int
   adjacentRooms: [] # Int[]
 
 room:
   id: 3 # Int
   # String
-  name: Medbay 1
-  type: 2 # Int
-  size: 25 # Int
-  maxCrew: 8 # Int
-  storage: 8 # Int
+  name: Main bridge
+  type: 4 # Int
+  size: 20 # Int
+  maxCrew: 10 # Int
+  storage: 5 # Int
   adjacentRooms: [] # Int[]

@@ -1,26 +1,21 @@
 #include "crew_model.h"
 
-size_t currentBiggestCrewMemberId = 0;
-crewMember** crewList = NULL;
-size_t crewListSize = 0;
-
-
-int addCrewMember(crewMember *newCrewMember)
+int addCrewMember(crewMember *newCrewMember, crewMember ***crewList, size_t *crewListSize)
 {
-    crewMember **newCrewList = malloc(sizeof(crewMember*) * (crewListSize + 1));
+    crewMember **newCrewList = malloc(sizeof(crewMember*) * (*crewListSize + 1));
     if (newCrewList == NULL) 
         goto error_malloc_crewmember;
 
-    for (size_t i = 0; i < crewListSize; i++)
+    for (size_t i = 0; i < *crewListSize; i++)
     {
-        newCrewList[i] = crewList[i];
+        newCrewList[i] = (*crewList)[i];
     }
 
-    newCrewList[crewListSize] = newCrewMember;
-    crewListSize++;
+    newCrewList[*crewListSize] = newCrewMember;
+    (*crewListSize)++;
 
-    free(crewList);
-    crewList = newCrewList;
+    free(*crewList);
+    *crewList = newCrewList;
 
     crewRoomLink *newCrewRoomLink = buildCrewRoomLink((crewMember *) newCrewMember, NULL, NULL);
     if (newCrewMember == NULL)
@@ -42,7 +37,7 @@ error_add_to_linker:
     return -3;
 }
 
-crewMember *buildCrewMember(enum job job, char *name, size_t nameLength)
+crewMember *buildCrewMember(enum job job, char *name, size_t nameLength, size_t *currentBiggestCrewMemberId)
 {
     crewMember *newCrewMember = malloc(sizeof(crewMember));
     if (newCrewMember == NULL)
@@ -50,46 +45,34 @@ crewMember *buildCrewMember(enum job job, char *name, size_t nameLength)
         return NULL;
     }
 
-    currentBiggestCrewMemberId++;
+    (*currentBiggestCrewMemberId)++;
 
-    newCrewMember->id = currentBiggestCrewMemberId;
+    newCrewMember->id = *currentBiggestCrewMemberId;
     strncpy(newCrewMember->name, name, CREW_MEMBER_NAME_MAX_LENGTH);
     newCrewMember->job = job;
 
     return newCrewMember;
 }
 
-int initCrew(int crewSize)
+int destroyCrewMember(size_t crewMemberId, crewMember ***crewList, size_t *crewListSize)
 {
-    crewMember *newCrewMember = buildCrewMember(PILOT, "James", CREW_MEMBER_NAME_MAX_LENGTH);
-    if (newCrewMember == NULL)
-        return -1;
-    
-    if (addCrewMember(newCrewMember) != 0)
-        return -2;
-
-    return 0;
-}
-
-int destroyCrewMember(size_t crewMemberId)
-{
-    if (crewListSize == 0)
+    if (*crewListSize == 0)
         goto error_list_is_empty;
 
-    crewMember **newCrewList = malloc(sizeof(crewMember*) * (crewListSize - 1));
+    crewMember **newCrewList = malloc(sizeof(crewMember*) * (*crewListSize - 1));
 
-    if (crewListSize != 1 && newCrewList == NULL)
+    if (*crewListSize != 1 && newCrewList == NULL)
         goto error_malloc_failure;
  
     bool crewMemberWasFound = false;
-    for (size_t i = 0; i < crewListSize; i++)
+    for (size_t i = 0; i < *crewListSize; i++)
     {
         if (crewMemberWasFound)
-            newCrewList[i - 1] = crewList[i]; // -1 to account for the removed member
-        else if (crewList[i]->id == crewMemberId)
+            newCrewList[i - 1] = (*crewList)[i]; // -1 to account for the removed member
+        else if ((*crewList)[i]->id == crewMemberId)
         {
             crewMemberWasFound = true;
-            crewMember *crewMemberToDestroy = crewList[i];
+            crewMember *crewMemberToDestroy = (*crewList)[i];
             crewRoomLink *crewRoomLinkToRemove = getCrewRoomLinkByCrewMember(crewRoomLinker, crewRoomLinkerSize, (crewMember *) crewMemberToDestroy);
             if (crewRoomLinkToRemove == NULL)
                 goto error_link_not_found;
@@ -98,15 +81,15 @@ int destroyCrewMember(size_t crewMemberId)
             free(crewMemberToDestroy);
             crewMemberToDestroy = NULL;
         }
-        else if (i >= crewListSize - 1)
+        else if (i >= (*crewListSize) - 1)
             goto error_crew_member_not_found;
         else
-            newCrewList[i] = crewList[i]; 
+            newCrewList[i] = (*crewList)[i]; 
     }
     
-    crewListSize--;
-    free(crewList);
-    crewList = newCrewList;
+    (*crewListSize)--;
+    free(*crewList);
+    *crewList = newCrewList;
     return 0;
 
 error_list_is_empty:

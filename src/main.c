@@ -3,9 +3,7 @@
 int main() 
 {
     // TODO: Fill with arguments
-    configCheckIntegrityAndFillParams();
-    initCrew(4);
-    initRoom(0);
+    configCheckIntegrityAndFillParams(&crewList, &crewListSize, &roomList, &roomListSize);
     
     while (1 == 1)
     {

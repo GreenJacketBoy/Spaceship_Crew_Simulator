@@ -65,10 +65,10 @@ int roomAdd()
     if (promptRoomAttributes((char *) &name, ROOM_NAME_MAX_LENGTH, &roomType, &crewCapacity, &storageCapacity, &size) == -1)
         goto error_reading_input;
 
-    room *newRoom = createRoom(name, roomType, crewCapacity, storageCapacity, size);
+    room *newRoom = createRoom(name, roomType, crewCapacity, storageCapacity, size, &currentBiggestRoomId);
     if (newRoom == NULL)
         goto error_malloc_faillure_room;
-    if (addRoom(newRoom) != 0)
+    if (addRoom(newRoom, &roomList, &roomListSize) != 0)
         goto error_malloc_faillure_room_list;
 
     return 0;
@@ -90,7 +90,7 @@ int roomRm()
     size_t roomIdToRemove;
     viewRoomRm(&roomIdToRemove);
 
-    int errorCode = destroyRoom(roomIdToRemove);
+    int errorCode = destroyRoom(roomIdToRemove, &roomList, &roomListSize);
 
     switch (errorCode) {
         case 0:

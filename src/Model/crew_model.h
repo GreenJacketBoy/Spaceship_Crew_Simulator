@@ -9,14 +9,9 @@
 #include "../core.h"
 #include "type_definitions.h"
 
-extern size_t currentBiggestCrewMemberId;
-extern crewMember** crewList;
-extern size_t crewListSize;
-
-int initCrew(int crewSize);
-int addCrewMember(crewMember *newCrewMember);
-crewMember *buildCrewMember(enum job job, char *name, size_t nameLength);
-int destroyCrewMember(size_t crewMemberId);
+int addCrewMember(crewMember *newCrewMember, crewMember ***crewList, size_t *crewListSize);
+crewMember *buildCrewMember(enum job job, char *name, size_t nameLength, size_t *currentBiggestCrewMemberId);
+int destroyCrewMember(size_t crewMemberId, crewMember ***crewList, size_t *crewListSize);
 crewMember *getCrewMemberFromArray(size_t crewMemberId, crewMember **arrayToLookIn, size_t arraySize);
 int modelEditCrewMember(crewMember *crewMemberToEdit, enum job job, char *name, size_t nameLength);
 int modelMoveCrewMember(crewMember *crewMemberToMove, size_t roomIdToMoveTo, room **roomList, size_t roomListSize);

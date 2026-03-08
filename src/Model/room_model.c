@@ -1,27 +1,23 @@
 #include "room_model.h"
 
-size_t currentBiggestRoomId = 0;
-room **roomList = NULL;
-size_t roomListSize = 0;
-
-int addRoom(room *newRoom)
+int addRoom(room *newRoom, room ***roomList, size_t *roomListSize)
 {
-    room **newRoomList = malloc(sizeof(room*) * (roomListSize + 1));
+    room **newRoomList = malloc(sizeof(room*) * ((*roomListSize) + 1));
     if (newRoomList == NULL) 
     {
         return 1;
     }
-    for (size_t i = 0; i < roomListSize; i++)
+    for (size_t i = 0; i < *roomListSize; i++)
     {
-        newRoomList[i] = roomList[i];
+        newRoomList[i] = (*roomList)[i];
     }
 
-    newRoomList[roomListSize] = newRoom;
-    roomListSize++;
+    newRoomList[*roomListSize] = newRoom;
+    (*roomListSize)++;
 
-    free(roomList);
+    free(*roomList);
+    *roomList = newRoomList;
 
-    roomList = newRoomList;
     return 0;
 }
 
@@ -30,16 +26,17 @@ room* createRoom(
     enum roomType roomType,
     size_t crewCapacity,
     size_t storageCapacity,
-    size_t size
+    size_t size,
+    size_t *currentBiggestRoomId
 )
 {
     room *newRoom = malloc(sizeof(room));
     if (newRoom == NULL)
         return NULL;
  
-    currentBiggestRoomId++;
+    (*currentBiggestRoomId)++;
 
-    newRoom->id = currentBiggestRoomId;
+    newRoom->id = *currentBiggestRoomId;
     strncpy(newRoom->name, name, ROOM_NAME_MAX_LENGTH);
     newRoom->roomType = roomType;
     newRoom->crewCapacity = crewCapacity;
@@ -103,26 +100,10 @@ room *getRoomInArray(room **roomsArray, size_t roomsArraySize, size_t roomIdToLo
     return NULL;
 }
 
-int initRoom(int amountOfRooms)
+int destroyRoom(size_t roomId, room ***roomList, size_t *roomListSize)
 {
-    room *medbay = createRoom("Medbay 1", MEDBAY, 10, 7, 75);
-    room *bridge = createRoom("Bridge", BRIDGE, 15, 3, 50);
-    room *medbayToBridgeCorridor = createRoom("Corridor Medbay to Bridge", CORRIDOR, 20, 5, 100);
-
-    addAdjacentRoom(medbay, medbayToBridgeCorridor);
-    addAdjacentRoom(bridge, medbayToBridgeCorridor);
-
-    addRoom(medbay);
-    addRoom(bridge);
-    addRoom(medbayToBridgeCorridor);
-
-    return 0;
-}
-
-int destroyRoom(size_t roomId)
-{
-    bool deepRemoval = true;
-    room *removedRoom = popRoomFromRoomArray(&roomList, &roomListSize, roomId, deepRemoval);
+    bool deepRemoval;
+    room *removedRoom = popRoomFromRoomArray(roomList, roomListSize, roomId, deepRemoval = true);
     
     if (removedRoom == NULL)
         return -1;

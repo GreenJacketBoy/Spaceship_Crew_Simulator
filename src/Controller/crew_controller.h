@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "../Model/crew_model.h"
+#include "../Model/global_variables.h"
 #include "../View/crew_view.h"
 #include "../core.h"
 

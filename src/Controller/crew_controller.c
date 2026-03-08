@@ -59,11 +59,11 @@ int crewAdd()
             goto error_reading_input;
     }
  
-    crewMember *newCrewMember = buildCrewMember(job, name, CREW_MEMBER_NAME_MAX_LENGTH);
+    crewMember *newCrewMember = buildCrewMember(job, name, CREW_MEMBER_NAME_MAX_LENGTH, &currentBiggestCrewMemberId);
     if (newCrewMember == NULL)
         goto error_malloc_faillure_crew_member;
 
-    if (addCrewMember(newCrewMember) != 0)
+    if (addCrewMember(newCrewMember, &crewList, &crewListSize) != 0)
         goto error_malloc_faillure_crew_list;
 
     return 0;
@@ -88,7 +88,7 @@ int crewRm()
     size_t crewMemberId;
     viewRemoveCrewMember(&crewMemberId);
 
-    int errorCode = destroyCrewMember(crewMemberId); 
+    int errorCode = destroyCrewMember(crewMemberId, &crewList, &crewListSize); 
 
     switch (errorCode)
     {

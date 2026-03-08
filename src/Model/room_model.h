@@ -9,23 +9,19 @@
 #include "../core.h"
 #include "type_definitions.h"
 
-extern size_t currentBiggestRoomId;
-extern room **roomList;
-extern size_t roomListSize;
-
-int initRoom(int amountOfRooms);
 room* createRoom(
     char *name,
     enum roomType roomType,
     size_t crewCapacity,
     size_t storageCapacity,
-    size_t size
+    size_t size,
+    size_t *currentBiggestRoomId
 );
 int addAdjacentRoom(room *roomToAddTo, room *adjacentRoomToAdd);
 bool isAdjacent(room *referenceRoom, room *roomToLookFor);
 room *getRoomInArray(room **roomsArray, size_t roomsArraySize, size_t roomIdToLookFor);
-int addRoom(room *newRoom);
-int destroyRoom(size_t roomId);
+int addRoom(room *newRoom, room ***roomList, size_t *roomListSize);
+int destroyRoom(size_t roomId, room ***roomList, size_t *roomListSize);
 room *popRoomFromRoomArray(room ***roomsArray, size_t *roomsArraySize, size_t roomIdToRemove, bool deepRemoval);
 int modelEditRoom(
     room *roomToEdit,

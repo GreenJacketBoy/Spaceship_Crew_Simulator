@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "../Model/room_model.h"
+#include "../Model/global_variables.h"
 #include "../View/room_view.h"
 #include "../core.h"
 
