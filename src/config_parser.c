@@ -203,6 +203,7 @@ int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCo
                 (*rooms)[roomIndex] = malloc(sizeof(room));
                 (*rooms)[roomIndex]->id = configGetIntAfterString(lineBuffer, "  id:");
                 (*rooms)[roomIndex]->adjacentRoomsArray = NULL; // in case of a later free
+                (*rooms)[roomIndex]->adjacentRoomsArraySize = 0;
                 roomIdsLineNumbers[roomIndex] = lineNumber;
                 if ((*rooms)[roomIndex]->id > *currentBiggestRoomId)
                     *currentBiggestRoomId = (*rooms)[roomIndex]->id;
@@ -402,7 +403,6 @@ int initAndCheckAdjacentRooms(room **roomArray, size_t roomArraySize, room *room
     char *separatorChar = charPtr;
     size_t adjacentRoomId = 0;
     size_t adjacentRoomsSize = 0;
-    room **adjacentRooms = NULL;
     
     goToNextNonSpaceCharacterOnThisLine(&charPtr);
     if (*charPtr == ']')
@@ -412,7 +412,6 @@ int initAndCheckAdjacentRooms(room **roomArray, size_t roomArraySize, room *room
     while ((charPtr = getNextOccurenceOfCharOnThisLine(charPtr+1, ',')) != NULL)
         adjacentRoomsSize++;
 
-    adjacentRooms = malloc(sizeof(room *) * adjacentRoomsSize);
     charPtr = lineBuffer;
 
     for (size_t i = 0; i < adjacentRoomsSize; i++)
@@ -422,16 +421,16 @@ int initAndCheckAdjacentRooms(room **roomArray, size_t roomArraySize, room *room
 
         room *adjacentRoom = configGetRoomInArray(roomArray, roomArraySize, (adjacentRoomId = configGetIntAfterString(charPtr, "")));
         if (adjacentRoom == NULL)
-            goto id_does_not_exist;
+            goto error_id_does_not_exist;
         if (adjacentRoom->id == roomBeingChecked->id)
-            goto room_adjacent_to_itself;
+            goto error_room_adjacent_to_itself;
 
-        adjacentRooms[i] = adjacentRoom;
+        addAdjacentRoom(roomBeingChecked, adjacentRoom);
 
         for (size_t j = 0; j < i; j++)
         {
-            if (adjacentRooms[i]->id == adjacentRooms[j]->id)
-                goto duplicate_id;
+            if (isAdjacent(adjacentRoom, roomBeingChecked->adjacentRoomsArray[j]))
+                goto error_duplicate_id;
         }
 
         separatorChar++;
@@ -439,18 +438,19 @@ int initAndCheckAdjacentRooms(room **roomArray, size_t roomArraySize, room *room
     }
 
 empty_list:
-    roomBeingChecked->adjacentRoomsArraySize = adjacentRoomsSize;
-    roomBeingChecked->adjacentRoomsArray = adjacentRooms;
     return 0;
-id_does_not_exist:
+error_id_does_not_exist:
     printf("Error : non-existing room id (%zu) used at line %zu\n", adjacentRoomId, lineNumber);
     return -1;
-duplicate_id:
+error_duplicate_id:
     printf("Error : duplicate room id (%zu) found at line %zu\n", adjacentRoomId, lineNumber);
     return -2;
-room_adjacent_to_itself:
+error_room_adjacent_to_itself:
     printf("Error : A room cannot be adjacent to itself (id: %zu, line %zu)\n", adjacentRoomId, lineNumber);
     return -3;
+error_malloc_failure:
+    displayError("Could not allocate enough memory for adding adjacent rooms");
+    return -4;
 }
 
 int freeAll(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount)

@@ -10,6 +10,7 @@
 #include <string.h>
 #include "core.h"
 #include "Model/type_definitions.h"
+#include "Model/room_model.h"
 
 enum currentlyChecking 
 {

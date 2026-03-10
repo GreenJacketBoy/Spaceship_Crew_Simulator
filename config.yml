@@ -20,7 +20,10 @@ room:
   storage: 8 # Int
   # The Ids of the adjacent rooms. They are separated by a coma and as little
   # or as many space as you want. Start with '[' and ends with ']'
-  adjacentRooms: [3,  2  ] # Int[]
+
+  # Note that you can omit to repeat yourself : i.e if Room #1 has #2 as adjacent,
+  # you don't have to specify that #1 as adjacent to Room #2
+  adjacentRooms: [3  ] # Int[]
 
 
 room:
@@ -41,4 +44,4 @@ room:
   size: 20 # Int
   maxCrew: 10 # Int
   storage: 5 # Int
-  adjacentRooms: [] # Int[]
+  adjacentRooms: [2] # Int[]
