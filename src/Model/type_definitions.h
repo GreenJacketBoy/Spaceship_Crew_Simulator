@@ -4,27 +4,6 @@
 #include <stdio.h>
 
 /* 
- * CREW MEMBERS
- */
-
-#define JOB_STRING_MAX_LENGTH 64
-#define CREW_MEMBER_NAME_MAX_LENGTH 64
-#define AMOUNT_OF_DIFFERENT_JOBS 2
-
-enum job { // Try not to forget to update AMOUNT_OF_DIFFERENT_JOBS 
-    ENGINEER,
-    PILOT,
-};
-
-typedef struct
-{
-    size_t id;
-    char name[CREW_MEMBER_NAME_MAX_LENGTH];
-    enum job job;
-} crewMember;
-
-
-/* 
  * ROOMS
  */
 
@@ -52,15 +31,26 @@ typedef struct room
 } room;
 
 /* 
- * CREW ROOM LINKS
+ * CREW MEMBERS
  */
+
+#define JOB_STRING_MAX_LENGTH 64
+#define CREW_MEMBER_NAME_MAX_LENGTH 64
+#define AMOUNT_OF_DIFFERENT_JOBS 2
+
+enum job { // Try not to forget to update AMOUNT_OF_DIFFERENT_JOBS 
+    ENGINEER,
+    PILOT,
+};
 
 typedef struct
 {
-    crewMember *crewMember;
+    size_t id;
+    char name[CREW_MEMBER_NAME_MAX_LENGTH];
+    enum job job;
     room *currentRoom; /** The room inside which the crew member is */
     room *destinationRoom; /** The room where the crew member is headed (can be NULL) */
-} crewRoomLink;
+} crewMember;
 
 /* 
  * CONFIG

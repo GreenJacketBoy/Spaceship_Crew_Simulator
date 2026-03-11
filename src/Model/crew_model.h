@@ -5,7 +5,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "crew_room_linker_model.h"
 #include "../core.h"
 #include "type_definitions.h"
 

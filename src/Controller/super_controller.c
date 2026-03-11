@@ -26,10 +26,7 @@ int promptAndRedirect()
         handleCrewCommand(commandPlusArgs, maxCommandLength, roomList, roomListSize);
         break;
     case ROOM:
-        handleRoomCommand(commandPlusArgs, maxCommandLength, crewRoomLinker, crewRoomLinkerSize);
-        break;
-    case CREW_ROOM_LINKER:
-        handleCrewRoomLinkerCommand(commandPlusArgs, maxCommandLength);
+        handleRoomCommand(commandPlusArgs, maxCommandLength, crewList, crewListSize);
         break;
     default:
         return -2;
@@ -62,8 +59,6 @@ int getControllerToRedirectTo(char *fullCommand, size_t maxCmdLength, enum contr
         goto crew;
     if (strncmp(commandWord, "room", maxCmdLength) == 0)
         goto room;
-    if (strncmp(commandWord, "linker", maxCmdLength) == 0)
-        goto crew_room_linker;
     else
         goto error_invalid_word;
 
@@ -72,9 +67,6 @@ int getControllerToRedirectTo(char *fullCommand, size_t maxCmdLength, enum contr
         return 0;
     room:
         *controllerToRedirectTo = ROOM;
-        return 0;
-    crew_room_linker:
-        *controllerToRedirectTo = CREW_ROOM_LINKER;
         return 0;
     error_invalid_word:
         printf("'%s' is not a valid command word.\n", commandWord);

@@ -8,13 +8,13 @@
 #include "../core.h"
 
 
-int handleRoomCommand(char* cmd, size_t maxCmdLength, crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize);
+int handleRoomCommand(char* cmd, size_t maxCmdLength, crewMember **crewList, size_t crewListSize);
 int roomLs();
 int roomAdd();
 int roomRm();
 int roomLink();
 int roomUnlink();
 int roomEdit();
-int roomShow(crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize);
+int roomShow(crewMember **crewList, size_t crewListSize);
 
 #endif

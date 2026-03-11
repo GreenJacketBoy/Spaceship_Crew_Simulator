@@ -17,11 +17,8 @@ int addCrewMember(crewMember *newCrewMember, crewMember ***crewList, size_t *cre
     free(*crewList);
     *crewList = newCrewList;
 
-    crewRoomLink *newCrewRoomLink = buildCrewRoomLink((crewMember *) newCrewMember, NULL, NULL);
     if (newCrewMember == NULL)
         goto error_build_linker;
-    if (addToCrewRoomLinker(&crewRoomLinker, &crewRoomLinkerSize, newCrewRoomLink) != 0)
-        goto error_add_to_linker;
 
     return 0;
 
@@ -31,10 +28,6 @@ error_malloc_crewmember:
 error_build_linker:
     displayError("ERROR: Something went wrong when building the crew room linker");
     return -2;
-error_add_to_linker:
-    displayError("ERROR: Something went wrong when adding the room to the crew room linker");
-    free(newCrewRoomLink);
-    return -3;
 }
 
 crewMember *buildCrewMember(enum job job, char *name, size_t nameLength, size_t *currentBiggestCrewMemberId)
@@ -73,11 +66,6 @@ int destroyCrewMember(size_t crewMemberId, crewMember ***crewList, size_t *crewL
         {
             crewMemberWasFound = true;
             crewMember *crewMemberToDestroy = (*crewList)[i];
-            crewRoomLink *crewRoomLinkToRemove = getCrewRoomLinkByCrewMember(crewRoomLinker, crewRoomLinkerSize, (crewMember *) crewMemberToDestroy);
-            if (crewRoomLinkToRemove == NULL)
-                goto error_link_not_found;
-            if (removeFromCrewRoomLinker(&crewRoomLinker, &crewRoomLinkerSize, crewRoomLinkToRemove) != 0)
-                goto error_could_not_rm_from_linker;
             free(crewMemberToDestroy);
             crewMemberToDestroy = NULL;
         }
@@ -132,10 +120,7 @@ int modelMoveCrewMember(crewMember *crewMemberToMove, size_t roomIdToMoveTo, roo
     {
         if (roomList[i]->id == roomIdToMoveTo)
         {
-            crewRoomLink *crewRoomLinkToModify = getCrewRoomLinkByCrewMember(crewRoomLinker, crewRoomLinkerSize, crewMemberToMove);
-            if (crewRoomLinkToModify == NULL)
-                goto error_crew_room_link_404;
-            crewRoomLinkToModify->currentRoom = roomList[i];
+            crewMemberToMove->currentRoom = roomList[i];
             return 0;
         }
     }
@@ -154,10 +139,7 @@ int modelCrewMemberGoTo(crewMember *crewMemberToMove, size_t roomIdNewDestinatio
     {
         if (roomList[i]->id == roomIdNewDestination)
         {
-            crewRoomLink *crewRoomLinkToModify = getCrewRoomLinkByCrewMember(crewRoomLinker, crewRoomLinkerSize, crewMemberToMove);
-            if (crewRoomLinkToModify == NULL)
-                goto error_crew_room_link_404;
-            crewRoomLinkToModify->destinationRoom = roomList[i];
+            crewMemberToMove->destinationRoom = roomList[i];
             return 0;
         }
     }

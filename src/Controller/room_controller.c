@@ -1,6 +1,6 @@
 #include "room_controller.h"
 
-int handleRoomCommand(char* cmd, size_t maxCmdLength, crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize)
+int handleRoomCommand(char* cmd, size_t maxCmdLength, crewMember **crewList, size_t crewListSize)
 {
     if (strncmp(cmd, "room ls\n", maxCmdLength) == 0)
     {
@@ -40,7 +40,7 @@ int handleRoomCommand(char* cmd, size_t maxCmdLength, crewRoomLink **crewRoomLin
 
     if (strncmp(cmd, "room show\n", maxCmdLength) == 0)
     {
-        roomShow(crewRoomLinker, crewRoomLinkerSize);
+        roomShow(crewList, crewListSize);
         return 0;
     }
     
@@ -187,14 +187,14 @@ error_reading_input:
     return -2;
 }
 
-int roomShow(crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize)
+int roomShow(crewMember **crewList, size_t crewListSize)
 {
     size_t roomId = promptForSize_T("Id of the room to show :");
     room *roomToShow = getRoomInArray(roomList, roomListSize, roomId);
     if (roomToShow == NULL)
         goto error_room_not_found;
 
-    viewShowRoom(roomToShow, crewRoomLinker, crewRoomLinkerSize);
+    viewShowRoom(roomToShow, crewList, crewListSize);
     return 0;
 
 error_room_not_found:

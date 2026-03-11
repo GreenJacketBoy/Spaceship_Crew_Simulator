@@ -98,18 +98,17 @@ error_reading_input:
     return -1;
 }
 
-int viewShowCrewMember(crewRoomLink *crewRoomLinkToDisplay)
+int viewShowCrewMember(crewMember *crewMemberToDisplay)
 {
-    crewMember *crewMemberToDiplay = crewRoomLinkToDisplay->crewMember;
-    room *currentRoom = crewRoomLinkToDisplay->currentRoom;
-    room *destinationRoom = crewRoomLinkToDisplay->destinationRoom;
+    room *currentRoom = crewMemberToDisplay->currentRoom;
+    room *destinationRoom = crewMemberToDisplay->destinationRoom;
 
     char jobString[JOB_STRING_MAX_LENGTH] = "";
-    getJobToString(crewMemberToDiplay->job, jobString, JOB_STRING_MAX_LENGTH);
+    getJobToString(crewMemberToDisplay->job, jobString, JOB_STRING_MAX_LENGTH);
 
     printf("Crew member's details :\n");
-    printf("- " BOLD "Id:   " CRESET YEL BOLD "#%zu" CRESET "\n", crewMemberToDiplay->id);
-    printf("- " BOLD "Name: " CRESET GRN BOLD "%s" CRESET "\n", crewMemberToDiplay->name);
+    printf("- " BOLD "Id:   " CRESET YEL BOLD "#%zu" CRESET "\n", crewMemberToDisplay->id);
+    printf("- " BOLD "Name: " CRESET GRN BOLD "%s" CRESET "\n", crewMemberToDisplay->name);
     printf("- " BOLD "Job:  " CRESET BLU "%s" CRESET "\n", jobString);
     if (currentRoom == NULL)
         printf("- Current location:    " RED BOLD "Not found" CRESET "\n");

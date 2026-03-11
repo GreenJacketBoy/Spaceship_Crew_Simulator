@@ -181,11 +181,11 @@ error_crew_member_not_found:
 int crewShow()
 {
     size_t crewMemberIdToShow = promptForSize_T("Id of the crew member to show :");
-    crewRoomLink *crewRoomLinkToShow = getCrewRoomLinkByCrewMemberId(crewRoomLinker, crewRoomLinkerSize, crewMemberIdToShow);
-    if (crewRoomLinkToShow == NULL)
+    crewMember *crewMemberToShow = getCrewMemberFromArray(crewMemberIdToShow, crewList, crewListSize);
+    if (crewMemberToShow == NULL)
         goto error_crew_member_not_found;
 
-    viewShowCrewMember(crewRoomLinkToShow);
+    viewShowCrewMember(crewMemberToShow);
 
     return 0;
 

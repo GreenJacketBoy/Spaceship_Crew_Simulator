@@ -33,6 +33,6 @@ int viewRoomEdit(
     size_t *newSize
 );
 enum roomType promptForRoomType(char *promptMessage);
-int viewShowRoom(room *roomToShow, crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize);
+int viewShowRoom(room *roomToShow, crewMember **crewList, size_t crewListSize);
 
 #endif

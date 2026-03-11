@@ -119,14 +119,14 @@ error_reading_input:
     return -1;
 }
 
-int viewShowRoom(room *roomToShow, crewRoomLink **crewRoomLinker, size_t crewRoomLinkerSize)
+int viewShowRoom(room *roomToShow, crewMember **crewList, size_t crewListSize)
 {
     char typeString[ROOM_TYPE_STRING_MAX_LENGTH] = "";
     getRoomTypeToString(roomToShow->roomType, typeString, ROOM_TYPE_STRING_MAX_LENGTH);
 
     size_t amountOfCrewMembersInRoom = 0;
-    for (size_t i = 0; i < crewRoomLinkerSize; i++)
-        if (crewRoomLinker[i]->currentRoom == roomToShow)
+    for (size_t i = 0; i < crewListSize; i++)
+        if (crewList[i]->currentRoom == roomToShow)
             amountOfCrewMembersInRoom++;
 
     printf("Room's details :\n");
@@ -155,10 +155,10 @@ int viewShowRoom(room *roomToShow, crewRoomLink **crewRoomLinker, size_t crewRoo
     else
     {
         printf("- Crew Members in the Room :\n");
-        for (size_t i = 0; i < crewRoomLinkerSize; i++)
-            if (crewRoomLinker[i]->currentRoom == roomToShow)
+        for (size_t i = 0; i < crewListSize; i++)
+            if (crewList[i]->currentRoom == roomToShow)
                 printf("  * " YEL BOLD "#%zu" GRN BOLD " %s" CRESET "\n",
-                    crewRoomLinker[i]->crewMember->id, crewRoomLinker[i]->crewMember->name);
+                    crewList[i]->id, crewList[i]->name);
     }
 
     return 0;
