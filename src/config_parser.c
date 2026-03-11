@@ -110,6 +110,11 @@ int configCheckIntegrityAttributesAreTheCorrectType(char *configFilePath)
             if (errorCode == -2)
                 goto error_wrong_type_expecting_string;
         }
+        else if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, INT, "  currentRoom:")) != -1)
+        {
+            if (errorCode == -2)
+                goto error_wrong_type_expecting_int;
+        }
         else if ((errorCode = assertStartsWithAndIsExpectedType(lineBuffer, INT, "  job:")) != -1)
         {
             if (errorCode == -2)
@@ -215,6 +220,7 @@ int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCo
             else if (checking == CHECKING_CREWMEMBER)
             {
                 (*crewMembers)[crewIndex] = malloc(sizeof(crewMember));
+                (*crewMembers)[crewIndex]->currentRoom = NULL;
                 if ((*crewMembers)[crewIndex] == NULL) goto error_malloc_faillure;
                 (*crewMembers)[crewIndex]->id = configGetIntAfterString(lineBuffer, "  id:");
                 crewIdsLineNumbers[crewIndex] = lineNumber;
@@ -251,8 +257,7 @@ free_line_numbers_and_return:
     return errorCode;
 }
 
-int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath)
-{
+int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath) {
     enum currentlyChecking checking = CHECKING_NOTHING;
 
 
@@ -341,9 +346,8 @@ int configSetAllRemainingFields(crewMember **crewMembers, size_t crewCount, room
             else if (configLineStartsWith(lineBuffer, "  job:"))
                 crewMembers[crewIndex]->job = configGetIntAfterString(lineBuffer, "  job:") - 1;
 
-            // TODO: refactor currentRooms to be in crewMember struct
-            // else if (configLineStartsWith(lineBuffer, "  currentRoom:"))
-            //     crewMembers[crewIndex]-> = configGetIntAfterString(lineBuffer, "  currentRoom:");
+            else if (configLineStartsWith(lineBuffer, "  currentRoom:"))
+                crewMembers[crewIndex]->currentRoom = getRoomInArray(rooms, roomCount, configGetIntAfterString(lineBuffer, "  currentRoom:"));
         }
         else if (checking == CHECKING_ROOM)
         {
