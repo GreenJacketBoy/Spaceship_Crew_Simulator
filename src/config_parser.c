@@ -23,14 +23,14 @@ int configCheckIntegrityAndFillParams(crewMember ***crewMembers, size_t *crewCou
         default: break;
     }
 
-    switch (configCheckIntegrityReferencedIdsExist(*crewMembers, *crewCount, *rooms, *roomCount, CONFIG_FILE_NAME))
+    switch (configCheckIntegrityReferencedIdsExist(*crewMembers, crewCount, *rooms, roomCount, CONFIG_FILE_NAME))
     {
         case -1: goto error_opening_file;
         case -2: goto error_generic;
         default: break;
     }
 
-    switch (configSetAllRemainingFields(*crewMembers, *crewCount, *rooms, *roomCount, CONFIG_FILE_NAME))
+    switch (configSetAllRemainingFields(*crewMembers, crewCount, *rooms, roomCount, CONFIG_FILE_NAME))
     {
         case -1: goto error_opening_file;
         default: break;
@@ -242,11 +242,11 @@ error_opening_file:
 error_malloc_faillure:
     errorCode = -3;
     displayError("Could not allocate enouge memory to create the rooms and crewmembers of the config");
-    freeAll(*crewMembers, *crewCount, *rooms, *roomCount);
+    freeAll(*crewMembers, crewCount, *rooms, roomCount);
     goto free_line_numbers_and_return;
 error_generic:
     errorCode = -2;
-    freeAll(*crewMembers, *crewCount, *rooms, *roomCount);
+    freeAll(*crewMembers, crewCount, *rooms, roomCount);
 
 free_line_numbers_and_return:
     free(roomIdsLineNumbers);
@@ -257,7 +257,8 @@ free_line_numbers_and_return:
     return errorCode;
 }
 
-int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath) {
+int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t *crewCount, room **rooms, size_t *roomCount, char *configFilePath)
+{
     enum currentlyChecking checking = CHECKING_NOTHING;
 
 
@@ -277,7 +278,7 @@ int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t crew
         else if (configLineStartsWith(lineBuffer, "crewMember:")) checking = CHECKING_CREWMEMBER;
         else if (checking == CHECKING_CREWMEMBER)
         {
-            if (configLineStartsWith(lineBuffer, "  currentRoom:") && !isRoomInArray(rooms, roomCount, id = configGetIntAfterString(lineBuffer, "  currentRoom:")))
+            if (configLineStartsWith(lineBuffer, "  currentRoom:") && !isRoomInArray(rooms, *roomCount, id = configGetIntAfterString(lineBuffer, "  currentRoom:")))
             {
                 printf("Error : non-existing room id (%zu) used at line %zu\n%s\n", id, lineNumber, lineBuffer);
                 goto error_generic;
@@ -298,7 +299,7 @@ int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t crew
             else if (configLineStartsWith(lineBuffer, "  adjacentRooms:"))
             {
                 char *charPtr = getNextOccurenceOfCharOnThisLine(lineBuffer, '[') + 1;
-                if (initAndCheckAdjacentRooms(rooms, roomCount, rooms[roomIndex], charPtr, lineNumber) != 0)
+                if (initAndCheckAdjacentRooms(rooms, *roomCount, rooms[roomIndex], charPtr, lineNumber) != 0)
                     goto error_generic;
             }
         }
@@ -319,7 +320,7 @@ free_all_and_return:
     return errorCode;
 }
 
-int configSetAllRemainingFields(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath)
+int configSetAllRemainingFields(crewMember **crewMembers, size_t *crewCount, room **rooms, size_t *roomCount, char *configFilePath)
 {
     enum currentlyChecking checking = CHECKING_NOTHING;
 
@@ -347,7 +348,7 @@ int configSetAllRemainingFields(crewMember **crewMembers, size_t crewCount, room
                 crewMembers[crewIndex]->job = configGetIntAfterString(lineBuffer, "  job:") - 1;
 
             else if (configLineStartsWith(lineBuffer, "  currentRoom:"))
-                crewMembers[crewIndex]->currentRoom = getRoomInArray(rooms, roomCount, configGetIntAfterString(lineBuffer, "  currentRoom:"));
+                crewMembers[crewIndex]->currentRoom = getRoomInArray(rooms, *roomCount, configGetIntAfterString(lineBuffer, "  currentRoom:"));
         }
         else if (checking == CHECKING_ROOM)
         {
@@ -463,21 +464,23 @@ error_room_adjacent_to_itself:
     return -3;
 }
 
-int freeAll(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount)
+int freeAll(crewMember **crewMembers, size_t *crewCount, room **rooms, size_t *roomCount)
 {
-    for (size_t i = 0; i < crewCount; i++)
+    for (size_t i = 0; i < *crewCount; i++)
         free(crewMembers[i]);
 
     free(crewMembers);
     crewMembers = NULL;
+    *crewCount = 0;
 
-    for (size_t i = 0; i < roomCount; i++)
+    for (size_t i = 0; i < *roomCount; i++)
     {
         free(rooms[i]->adjacentRoomsArray);
         free(rooms[i]);
     }
     free(rooms);
     rooms = NULL;
+    *roomCount = 0;
     return 0;
 }
 

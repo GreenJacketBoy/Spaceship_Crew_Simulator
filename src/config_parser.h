@@ -39,10 +39,10 @@ size_t configGetIntAfterString(char *cptr, char *startsWithString);
 bool isRoomInArray(room **roomArray, size_t roomArraySize, size_t roomIdToLookFor);
 room *configGetRoomInArray(room **roomsArray, size_t roomsArraySize, size_t roomIdToLookFor);
 int initAndCheckAdjacentRooms(room **roomArray, size_t roomArraySize, room *roomBeingChecked, char *charPtr, size_t lineNumber);
-int freeAll(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount);
-int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath);
+int freeAll(crewMember **crewMembers, size_t *crewCount, room **rooms, size_t *roomCount);
+int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t *crewCount, room **rooms, size_t *roomCount, char *configFilePath);
 char *configGetStringAfterString(char *lineBuffer, char *startsWithString);
-int configSetAllRemainingFields(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount, char *configFilePath);
+int configSetAllRemainingFields(crewMember **crewMembers, size_t *crewCount, room **rooms, size_t *roomCount, char *configFilePath);
 
 /** room_or_crewMember sould be either room or crewmember, nothing else */
 #define hasDuplicatesIds(room_or_crewMember)\
