@@ -90,7 +90,7 @@ int roomRm()
     size_t roomIdToRemove;
     viewRoomRm(&roomIdToRemove);
 
-    int errorCode = destroyRoom(roomIdToRemove, &roomList, &roomListSize);
+    int errorCode = destroyRoom(roomIdToRemove, &roomList, &roomListSize, crewList, crewListSize);
 
     switch (errorCode) {
         case 0:

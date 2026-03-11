@@ -21,7 +21,7 @@ int addAdjacentRoom(room *roomToAddTo, room *adjacentRoomToAdd);
 bool isAdjacent(room *referenceRoom, room *roomToLookFor);
 room *getRoomInArray(room **roomsArray, size_t roomsArraySize, size_t roomIdToLookFor);
 int addRoom(room *newRoom, room ***roomList, size_t *roomListSize);
-int destroyRoom(size_t roomId, room ***roomList, size_t *roomListSize);
+int destroyRoom(size_t roomId, room ***roomList, size_t *roomListSize, crewMember **crewList, size_t crewListSize);
 room *popRoomFromRoomArray(room ***roomsArray, size_t *roomsArraySize, size_t roomIdToRemove, bool deepRemoval);
 int modelEditRoom(
     room *roomToEdit,

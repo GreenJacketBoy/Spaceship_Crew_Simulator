@@ -100,13 +100,21 @@ room *getRoomInArray(room **roomsArray, size_t roomsArraySize, size_t roomIdToLo
     return NULL;
 }
 
-int destroyRoom(size_t roomId, room ***roomList, size_t *roomListSize)
+int destroyRoom(size_t roomId, room ***roomList, size_t *roomListSize, crewMember **crewList, size_t crewListSize)
 {
     bool deepRemoval;
     room *removedRoom = popRoomFromRoomArray(roomList, roomListSize, roomId, deepRemoval = true);
     
     if (removedRoom == NULL)
         return -1;
+
+    for (size_t i = 0; i < crewListSize; i++)
+    {
+        if (crewList[i]->currentRoom == removedRoom)
+            crewList[i]->currentRoom = NULL;
+        if (crewList[i]->destinationRoom == removedRoom)
+            crewList[i]->destinationRoom = NULL;
+    }
 
     free(removedRoom);
     return 0;
