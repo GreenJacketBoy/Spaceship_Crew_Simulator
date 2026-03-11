@@ -187,6 +187,8 @@ int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCo
     size_t *roomIdsLineNumbers = malloc(sizeof(size_t) * *roomCount);
     size_t *crewIdsLineNumbers = malloc(sizeof(size_t) * *crewCount);
 
+    if (*rooms == NULL || crewMembers == NULL || roomIdsLineNumbers == NULL || crewIdsLineNumbers == NULL)
+        goto error_malloc_faillure;
 
     FILE *fptr = fopen(configFilePath, "r");
     if (fptr == NULL)
@@ -201,6 +203,7 @@ int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCo
             if (checking == CHECKING_ROOM)
             {
                 (*rooms)[roomIndex] = malloc(sizeof(room));
+                if ((*rooms)[roomIndex] == NULL) goto error_malloc_faillure;
                 (*rooms)[roomIndex]->id = configGetIntAfterString(lineBuffer, "  id:");
                 (*rooms)[roomIndex]->adjacentRoomsArray = NULL; // in case of a later free
                 (*rooms)[roomIndex]->adjacentRoomsArraySize = 0;
@@ -212,6 +215,7 @@ int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCo
             else if (checking == CHECKING_CREWMEMBER)
             {
                 (*crewMembers)[crewIndex] = malloc(sizeof(crewMember));
+                if ((*crewMembers)[crewIndex] == NULL) goto error_malloc_faillure;
                 (*crewMembers)[crewIndex]->id = configGetIntAfterString(lineBuffer, "  id:");
                 crewIdsLineNumbers[crewIndex] = lineNumber;
                 if ((*crewMembers)[crewIndex]->id > *currentBiggestCrewMemberId)
@@ -229,6 +233,11 @@ int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCo
 
 error_opening_file:
     return -1;
+error_malloc_faillure:
+    errorCode = -3;
+    displayError("Could not allocate enouge memory to create the rooms and crewmembers of the config");
+    freeAll(*crewMembers, *crewCount, *rooms, *roomCount);
+    goto free_line_numbers_and_return;
 error_generic:
     errorCode = -2;
     freeAll(*crewMembers, *crewCount, *rooms, *roomCount);
@@ -448,9 +457,6 @@ error_duplicate_id:
 error_room_adjacent_to_itself:
     printf("Error : A room cannot be adjacent to itself (id: %zu, line %zu)\n", adjacentRoomId, lineNumber);
     return -3;
-error_malloc_failure:
-    displayError("Could not allocate enough memory for adding adjacent rooms");
-    return -4;
 }
 
 int freeAll(crewMember **crewMembers, size_t crewCount, room **rooms, size_t roomCount)
