@@ -76,15 +76,18 @@ int configCheckIntegrityAllFieldsPresentForAllObjects(char *configFilePath)
             goto error_unexpected_character;
     }
 
+    fclose(fptr);
     return 0;
 
 error_opening_file:
+    fclose(fptr);
     return -1;
 error_unexpected_character:
     displayError("Unexpected char sequence");
     printf("%s\n", lineBuffer);
 error_generic:
     printf("Error at line %zu (probably)\n", lineNumber);
+    fclose(fptr);
     return -2;
 }
 
@@ -154,6 +157,7 @@ int configCheckIntegrityAttributesAreTheCorrectType(char *configFilePath)
         lineNumber++;
     }
 
+    fclose(fptr);
     return 0;
 
 error_wrong_type_expecting_string:
@@ -168,8 +172,10 @@ error_wrong_type_expecting_array_of_int:
 error_generic:
     printf("%s\n", lineBuffer);
     printf("Error at line %zu (probably)\n", lineNumber);
+    fclose(fptr);
     return -2;
 error_opening_file:
+    fclose(fptr);
     return -1;
 }
 
@@ -238,6 +244,7 @@ int configCheckIntegrityNoDuplicateIds(crewMember ***crewMembers, size_t *crewCo
     goto free_line_numbers_and_return;
 
 error_opening_file:
+    fclose(fptr);
     return -1;
 error_malloc_faillure:
     errorCode = -3;
@@ -254,6 +261,7 @@ free_line_numbers_and_return:
     free(crewIdsLineNumbers);
     crewIdsLineNumbers = NULL;
 
+    fclose(fptr);
     return errorCode;
 }
 
@@ -306,6 +314,7 @@ int configCheckIntegrityReferencedIdsExist(crewMember **crewMembers, size_t *cre
         lineNumber++;
     }
 
+    fclose(fptr);
     return errorCode;
 
 error_generic:
@@ -317,6 +326,7 @@ error_opening_file:
 
 free_all_and_return:
     freeAll(crewMembers, crewCount, rooms, roomCount);
+    fclose(fptr);
     return errorCode;
 }
 
