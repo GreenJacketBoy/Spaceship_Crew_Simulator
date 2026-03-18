@@ -42,6 +42,6 @@ room:
   name: Main bridge
   type: 4 # Int
   size: 20 # Int
-  maxCrew: 10 # Int
+  maxCrew: 5 # Int
   storage: 5 # Int
   adjacentRooms: [2] # Int[]

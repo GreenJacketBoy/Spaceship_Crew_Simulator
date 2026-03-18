@@ -1,6 +1,6 @@
 #include "crew_controller.h"
 
-int handleCrewCommand(char* cmd, size_t maxCmdLength, room **roomList, size_t roomListSize)
+int handleCrewCommand(char* cmd, size_t maxCmdLength)
 {
     if (strncmp(cmd, "crew ls\n", maxCmdLength) == 0)
     {
@@ -28,7 +28,7 @@ int handleCrewCommand(char* cmd, size_t maxCmdLength, room **roomList, size_t ro
 
     if (strncmp(cmd, "crew mv\n", maxCmdLength) == 0)
     {
-        crewMv(roomList, roomListSize);
+        crewMv(roomList, roomListSize, crewList, crewListSize);
         return 0;
     }
 
@@ -142,7 +142,7 @@ error_reading_input:
     return -2;
 }
 
-int crewMv(room **roomList, size_t roomListSize)
+int crewMv(room **roomList, size_t roomListSize, crewMember **crewList, size_t crewListSize)
 {
     size_t crewMemberIdToMove = promptForSize_T("Id of the crew member to move :");
     crewMember *crewMemberToMove = getCrewMemberFromArray(crewMemberIdToMove, crewList, crewListSize);
@@ -150,8 +150,7 @@ int crewMv(room **roomList, size_t roomListSize)
     if (crewMemberToMove == NULL)
         goto error_crew_member_not_found;
 
-    size_t roomIdToMoveTo = promptForSize_T("Id of the room to move to :");
-    modelMoveCrewMember(crewMemberToMove, roomIdToMoveTo, roomList, roomListSize);
+    modelMoveCrewMember(crewMemberToMove, crewList, crewListSize, roomList, roomListSize);
 
     return 0;
 

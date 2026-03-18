@@ -8,11 +8,11 @@
 #include "../core.h"
 
 
-int handleCrewCommand(char* cmd, size_t maxCmdLength, room **roomList, size_t roomListSize);
+int handleCrewCommand(char* cmd, size_t maxCmdLength);
 int crewAdd();
 int crewRm();
 int crewEdit();
-int crewMv(room **roomList, size_t roomListSize);
+int crewMv(room **roomList, size_t roomListSize, crewMember **crewList, size_t crewListSize);
 int crewGoto(room **roomList, size_t roomListSize);
 int crewShow();
 

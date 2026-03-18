@@ -8,7 +8,7 @@ command line interface when the program is running :
   - [x] **add** : add a crew member
   - [x] **edit** : edit a crew member
   - [x] **rm** : remove a crew member
-  - [x] **mv** : move a crew member to a reachable room
+  - [x] **mv** : move a crew member one room toward its destination
   - [x] **goto** : change the destination room of a crew member
   - [x] **show** : diaplay details of a crew member
 
@@ -20,6 +20,3 @@ command line interface when the program is running :
   - [x] **link** : make two rooms adjacents to one another
   - [x] **unlink** : make two rooms not adjacent anymore
   - [x] **show** : diaplay details of a room
-
-- [x] **linker** :
-  - [x] **ls** : display all crew room links

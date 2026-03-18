@@ -114,27 +114,98 @@ int modelEditCrewMember(crewMember *crewMemberToEdit, enum job job, char *name, 
     return 0;
 }
 
-int modelMoveCrewMember(crewMember *crewMemberToMove, size_t roomIdToMoveTo, room **roomList, size_t roomListSize)
+int modelMoveCrewMember(crewMember *crewMemberToMove, crewMember **crewList, size_t crewListSize, room **roomList, size_t roomListSize)
 {
+    room *nextRoom = pathfindNextRoom(crewMemberToMove->currentRoom, crewMemberToMove->destinationRoom, roomList, roomListSize, crewList, crewListSize);
+    if (nextRoom == NULL)
+        return -1;
+
+    crewMemberToMove->currentRoom = nextRoom;
+    if (crewMemberToMove->currentRoom == crewMemberToMove->destinationRoom)
+        crewMemberToMove->destinationRoom = NULL;
+    return 0;
+}
+
+size_t modelCountCrewInRoom(size_t roomId, crewMember **crewList, size_t crewListSize)
+{
+    size_t crewCount = 0;
+    for (size_t i = 0; i < crewListSize; i++)
+        if (crewList[i]->currentRoom != NULL && crewList[i]->currentRoom->id == roomId)
+            crewCount++;
+
+    return crewCount;
+}
+
+room *pathfindNextRoom(room *initialRoom, room *destinationRoom, room **roomList, size_t roomListSize, crewMember **crewList, size_t crewListSize)
+{
+    room *nextRoom = NULL;
+    coloredRoom *coloredRooms = NULL;
+
+    if (destinationRoom == NULL)
+        goto error_no_destination;
+    if (initialRoom == NULL)
+        return destinationRoom; // If they are floating in space, let's say they can get back inside in any room.
+    if (initialRoom->adjacentRoomsArraySize == 0)
+        goto error_unreachable_destination;
+
+    coloredRooms = malloc(sizeof(coloredRoom) * roomListSize);
     for (size_t i = 0; i < roomListSize; i++)
     {
-        if (roomList[i]->id == roomIdToMoveTo)
+        coloredRooms[i].roomPointer = roomList[i];
+        coloredRooms[i].isColored = coloredRooms[i].roomPointer == initialRoom ? true : false;
+    }
+
+    for (size_t i = 0; i < initialRoom->adjacentRoomsArraySize; i++)
+    {
+        if (isRoomLeadingToDestination(initialRoom->adjacentRoomsArray[i], destinationRoom, coloredRooms, roomListSize, crewList, crewListSize))
         {
-            crewMemberToMove->currentRoom = roomList[i];
-            return 0;
+            nextRoom = initialRoom->adjacentRoomsArray[i];
+            goto free_and_return;
         }
     }
 
-    displayError("The room is not in the roomArray");
-    return -1;
+    goto error_unreachable_destination;
 
-error_crew_room_link_404:
-    displayError("The crewRoomLink associated to the crewMember doesn't exist");
-    return -2;
+error_no_destination:
+    displayError("The crew member does not have a destination set");
+    goto free_and_return;
+error_unreachable_destination:
+    displayError("Destination cannot be reached (no path or the room is full)");
+    goto free_and_return;
+free_and_return:
+    free(coloredRooms);
+    return nextRoom;
+}
+
+bool isRoomLeadingToDestination(room *initialRoom, room *destinationRoom, coloredRoom *coloredRooms, size_t roomListSize, crewMember **crewList, size_t crewListSize)
+{
+    size_t coloredRoomIndex = 0;
+    coloredRoom *cRoom = NULL;
+
+    if (modelCountCrewInRoom(initialRoom->id, crewList, crewListSize) >= initialRoom->crewCapacity)
+        return false;
+    if (initialRoom == destinationRoom) 
+        return true;
+
+    while ((cRoom = &(coloredRooms[coloredRoomIndex]))->roomPointer != initialRoom)
+        coloredRoomIndex++;
+
+    if (cRoom->isColored)
+        return false;
+    cRoom->isColored = true;
+
+    for (size_t i = 0; i < initialRoom->adjacentRoomsArraySize; i++)
+        if (isRoomLeadingToDestination(initialRoom->adjacentRoomsArray[i], destinationRoom, coloredRooms, roomListSize, crewList, crewListSize))
+            return true;
+
+    return false;
 }
 
 int modelCrewMemberGoTo(crewMember *crewMemberToMove, size_t roomIdNewDestination, room **roomList, size_t roomListSize)
 {
+    if (crewMemberToMove->currentRoom->id == roomIdNewDestination)
+        goto error_destination_already_reached;
+
     for (size_t i = 0; i < roomListSize; i++)
     {
         if (roomList[i]->id == roomIdNewDestination)
@@ -144,10 +215,9 @@ int modelCrewMemberGoTo(crewMember *crewMemberToMove, size_t roomIdNewDestinatio
         }
     }
 
-    displayError("The room is not in the roomArray");
+    displayError("The room does not exist");
     return -1;
-
-error_crew_room_link_404:
-    displayError("The crewRoomLink associated to the crewMember doesn't exist");
+error_destination_already_reached:
+    displayError("The crew member is already in this room");
     return -2;
 }
