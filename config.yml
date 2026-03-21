@@ -7,13 +7,21 @@ crewMember:
   # For String only, comments on the same line are not supported,
   # and are counted as the string
   name: James
+  # If unsure of which integer to enter for which job, try creating a crew member
+  # through the `crew add` command.
+  # When prompted for the job, you will be presented with a list of choices,
+  # with their corresponding index.
   job: 1 # Int
   currentRoom: 1 # Int
 
 room:
   id: 1 # Int
   # String
-  name: Corridor Medbay to Bridge
+  name: Corridor 1
+  # If unsure of which integer to enter for which type, try creating a room
+  # through the `room add` command.
+  # When prompted for the job, you will be presented with a list of choices,
+  # with their corresponding index.
   type: 1 # Int
   size: 25 # Int
   maxCrew: 8 # Int
@@ -23,7 +31,7 @@ room:
 
   # Note that you can omit to repeat yourself : i.e if Room #1 has #2 as adjacent,
   # you don't have to specify that #1 as adjacent to Room #2
-  adjacentRooms: [3  ] # Int[]
+  adjacentRooms: [2  ] # Int[]
 
 
 room:
@@ -44,4 +52,4 @@ room:
   size: 20 # Int
   maxCrew: 5 # Int
   storage: 5 # Int
-  adjacentRooms: [2] # Int[]
+  adjacentRooms: [1] # Int[]
